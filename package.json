@@ -1,7 +1,12 @@
 {
-  "name": "aiAgent",
+  "name": "miniprogram-ts-quickstart",
   "version": "1.0.0",
-  "dependencies": {
-    "openai": "^4.104.0"
+  "description": "",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "devDependencies": {
+    "miniprogram-api-typings": "2.12.0"
   }
 }
