@@ -1,0 +1,16 @@
+# Windows
+[Dd]esktop.ini
+Thumbs.db
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+
+# Node.js
+node_modules/
+\n# Ignore local virtualenvs and large binaries\nminiprogram/.venv/\n*.py[cod]\n__pycache__/\n*.pyd\n*.dll\n*.exe\nnode_modules/\n.DS_Store\n.vscode/\n
+\n# Ignore local virtualenvs and large binaries\nminiprogram/.venv/\n*.py[cod]\n__pycache__/\n*.pyd\n*.dll\n*.exe\nnode_modules/\n.DS_Store\n.vscode/\n

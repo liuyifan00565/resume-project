@@ -1,0 +1,237 @@
+<!-- pages/describe_tag/index.wxml -->
+<view class="page">
+
+<!-- 顶部说明 -->
+<view class="topCard">
+  <view class="topTitle">
+    <text class="seedIcon">🌱</text>
+    <text class="topText">标签记录</text>
+  </view>
+  <view class="topSub">
+    每条标签会自动记录「日期 + 时间点」
+  </view>
+</view>
+
+<view wx:if="{{!isLoggedIn}}" class="loginBanner warn">
+  未登录状态下可生成标签预览，但不会保存历史记录。请先回到作业工具中心完成微信快捷登录。
+</view>
+
+<view wx:else class="loginBanner ok">
+  当前账号：{{accountName}}。这里展示的标签历史仅属于该微信账号。
+</view>
+
+<!-- 表单区 -->
+<view class="card">
+  <view class="cardTitle">填写/配置标签字段</view>
+
+  <block wx:for="{{fields}}" wx:key="key">
+    <view class="fieldRow">
+      <view class="fieldLeft">
+        <text class="label">{{item.label}}</text>
+        <text class="req" wx:if="{{item.required}}">*</text>
+      </view>
+
+      <!-- 序列名称：输入 + 历史选择 -->
+      <view wx:if="{{item.key === 'seriesName'}}" class="iptWrap">
+        <input
+          class="ipt"
+          placeholder="请输入{{item.label}}"
+          value="{{item.value}}"
+          data-key="{{item.key}}"
+          bindinput="onFieldInput"
+        />
+        <view class="pickBtn" data-key="{{item.key}}" bindtap="chooseFieldFromHistory">历史选择</view>
+      </view>
+
+      <!-- 序号：输入 + 自动生成 -->
+      <view wx:elif="{{item.key === 'seqNo'}}" class="iptWrap">
+        <input
+          class="ipt"
+          placeholder="请输入{{item.label}}"
+          value="{{item.value}}"
+          data-key="{{item.key}}"
+          bindinput="onFieldInput"
+        />
+        <view class="autoBtn" bindtap="genSeqNo">自动生成</view>
+      </view>
+
+      <view wx:elif="{{item.key === 'recognizedCount'}}" class="iptWrap">
+        <input
+          class="ipt"
+          placeholder="请输入{{item.label}}"
+          value="{{item.value}}"
+          data-key="{{item.key}}"
+          bindinput="onFieldInput"
+        />
+        <view class="pickBtn" bindtap="chooseCountFromHistory">历史选择</view>
+      </view>
+
+      <view wx:elif="{{item.key === 'passRatePct'}}" class="iptWrap">
+        <input
+          class="ipt"
+          placeholder="请输入{{item.label}}"
+          value="{{item.value}}"
+          data-key="{{item.key}}"
+          bindinput="onFieldInput"
+        />
+        <view class="pickBtn" bindtap="choosePassRateFromHistory">历史选择</view>
+      </view>
+
+      <!-- 株高：输入 + 从测量记录选择 -->
+      <view wx:elif="{{item.key === 'plantHeight'}}" class="iptWrap">
+        <input
+          class="ipt"
+          placeholder="请输入{{item.label}}"
+          value="{{item.value}}"
+          data-key="{{item.key}}"
+          bindinput="onFieldInput"
+        />
+        <view class="pickBtn" data-key="{{item.key}}" bindtap="chooseMeasureFromHistory">历史选择</view>
+      </view>
+
+      <!-- 底荚高度：输入 + 从测量记录选择 -->
+      <view wx:elif="{{item.key === 'bottomPodHeight'}}" class="iptWrap">
+        <input
+          class="ipt"
+          placeholder="请输入{{item.label}}"
+          value="{{item.value}}"
+          data-key="{{item.key}}"
+          bindinput="onFieldInput"
+        />
+        <view class="pickBtn" data-key="{{item.key}}" bindtap="chooseMeasureFromHistory">历史选择</view>
+      </view>
+
+      <!-- 单株粒重：输入 + 从籽粒称重历史选择 -->
+      <view wx:elif="{{item.key === 'singlePlantGrainWeight'}}" class="iptWrap">
+        <input
+          class="ipt"
+          placeholder="请输入{{item.label}}"
+          value="{{item.value}}"
+          data-key="{{item.key}}"
+          bindinput="onFieldInput"
+        />
+        <view class="pickBtn" bindtap="chooseWeightFromHistory">历史选择</view>
+      </view>
+
+      <!-- 其它字段 -->
+      <input
+        wx:else
+        class="ipt"
+        placeholder="请输入{{item.label}}"
+        value="{{item.value}}"
+        data-key="{{item.key}}"
+        bindinput="onFieldInput"
+      />
+
+      <view
+        wx:if="{{item.deletable}}"
+        class="delBtn"
+        data-key="{{item.key}}"
+        bindtap="removeField"
+      >删</view>
+    </view>
+  </block>
+
+  <!-- 自定义字段 -->
+  <view class="addCustom">
+    <input
+      class="ipt"
+      placeholder="自定义字段名（如：行号/地块/处理组）"
+      value="{{customLabel}}"
+      bindinput="onCustomLabelInput"
+    />
+    <view class="addBtn" bindtap="addCustomField">添加</view>
+  </view>
+
+  <button class="genBtn" bindtap="genTag">生成标签</button>
+
+  <view class="preview" wx:if="{{tagText}}">
+    <view class="previewTitle">标签预览（点击复制）</view>
+    <view class="previewBox" bindtap="copyTag">{{tagText}}</view>
+  </view>
+</view>
+
+<!-- 标签记录 -->
+<view class="card">
+  <view class="cardTitleRow">
+    <text class="cardTitle">标签记录</text>
+    <text class="count">{{tags.length}} 条</text>
+  </view>
+
+  <view wx:if="{{!tags.length}}" class="empty">暂无记录，先生成一条标签～</view>
+
+  <block wx:for="{{tags}}" wx:key="id">
+    <view
+      class="tagRow"
+      data-id="{{item.id}}"
+      bindtap="onTagTap"
+      bindlongpress="onTagLongPress"
+    >
+      <view class="left">
+        <view class="line1">
+          <text class="t1">{{item.summaryTitle}}</text>
+          <!-- ✅ 这里就是你截图右侧时间：YYYY-MM-DD HH:mm:ss -->
+          <text class="time">{{item.displayTime}}</text>
+        </view>
+        <view class="t2">{{item.summarySub}}</view>
+      </view>
+
+      <view class="right">
+        <view wx:if="{{selectMode}}" class="ckWrap" data-id="{{item.id}}" catchtap="onToggleSelect">
+          <view class="ck {{selectedMap[item.id] ? 'on' : ''}}">
+            <text wx:if="{{selectedMap[item.id]}}" class="tick">✓</text>
+          </view>
+        </view>
+        <text wx:else class="arrow">›</text>
+      </view>
+    </view>
+  </block>
+</view>
+
+<!-- 选择模式底栏 -->
+<view class="batchBar" wx:if="{{selectMode}}">
+  <text class="batchInfo">已选 {{selectedCount}} 条</text>
+  <view class="batchBtns">
+    <button class="btn ghost" size="mini" bindtap="selectAllTags">{{selectedCount === tags.length ? '取消全选' : '全选'}}</button>
+    <button class="btn ghost" size="mini" bindtap="goReportWithSelected">导出</button>
+    <button class="btn danger" size="mini" bindtap="batchDelete">删除</button>
+    <button class="btn ghost" size="mini" bindtap="exitSelectMode">完成</button>
+  </view>
+</view>
+
+<!-- 详情弹窗 -->
+<view class="mask" wx:if="{{showDetail}}" catchtap="closeDetail"></view>
+<view class="modal" wx:if="{{showDetail}}">
+  <view class="modalHeader">
+    <text class="mTitle">标签详情</text>
+    <text class="mSub">{{detail.displayTime}}</text>
+  </view>
+
+  <scroll-view scroll-y class="modalBody">
+    <block wx:for="{{detail.fields}}" wx:key="fid">
+      <view class="detailRow">
+        <text class="dLabel">{{item.label}}</text>
+        <input
+          class="dIpt"
+          placeholder="未填"
+          value="{{item.value}}"
+          data-fid="{{item.fid}}"
+          bindinput="onDetailInput"
+        />
+      </view>
+    </block>
+
+    <view class="textBox">
+      <view class="textTitle">标签文本（点击复制）</view>
+      <view class="text" bindtap="copyDetailText">{{detail.tagText}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="modalActions">
+    <button class="btn ghost" size="mini" bindtap="deleteOne">删除</button>
+    <button class="btn primary" size="mini" bindtap="saveDetail">保存修改</button>
+  </view>
+</view>
+
+<view class="bottomSpacer"></view>
+</view>

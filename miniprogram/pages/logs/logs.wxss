@@ -1,0 +1,400 @@
+/* 页面 */
+.page { background:#F4F7FF; min-height:100vh; padding:20rpx 20rpx 0; }
+
+/* 卡片 */
+.card { background:#fff; border-radius:20rpx; box-shadow:0 10rpx 30rpx rgba(75,104,246,.06); padding:24rpx; margin-bottom:20rpx; }
+.card.compact { padding:16rpx 20rpx; }
+.card-title { font-size:28rpx; font-weight:700; color:#1F2A55; margin-bottom:16rpx; }
+.tip { font-size:24rpx; color:#9aa5c4; margin-left:10rpx; }
+
+/* 🆕 手动补点提示 */
+.manual-tip {
+  padding: 12rpx 20rpx;
+  background: linear-gradient(90deg, #FEF2F2, #FEE2E2);
+  border-radius: 12rpx;
+  margin-bottom: 16rpx;
+  border-left: 4rpx solid #EF4444;
+}
+
+.manual-tip text {
+  font-size: 24rpx;
+  color: #DC2626;
+  font-weight: 600;
+}
+
+/* 统计行（更紧凑） */
+.row.even { display:flex; gap:16rpx; }
+.stat { flex:1; padding:16rpx; border-radius:16rpx; background:linear-gradient(180deg,#F7F9FF,#F1F5FF); position:relative; }
+.stat-right { background:linear-gradient(180deg,#FFF5F6,#FFEFF2); }
+.stat-title { font-size:24rpx; color:#7A88B9; }
+.stat-val { font-size:48rpx; font-weight:800; color:#2C3E8F; line-height:1.2; }
+.stat-unit { position:absolute; right:18rpx; bottom:16rpx; color:#9aa5c4; font-size:22rpx; }
+.stat-diff { font-size:44rpx; font-weight:800; }
+.stat-diff.plus { color:#E55777; }   /* 多 */
+.stat-diff.minus { color:#3B82F6; }  /* 少 */
+
+/* 批次分段按钮（紧凑） */
+.seg { display:flex; background:#EDF2FF; border-radius:16rpx; overflow:hidden; }
+.seg-btn { flex:1; padding:18rpx 0; text-align:center; font-size:28rpx; color:#4B68F6; }
+.seg-btn.active { background:#4B68F6; color:#fff; }
+
+/* 自定义目标 */
+.target-input { margin-top:16rpx; }
+.ipt{
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0;
+  border: 1rpx solid #ccc;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  box-sizing: border-box;
+}
+
+/* 🆕 可缩放的图像容器 */
+.img-wrap { 
+  position:relative; 
+  border-radius:18rpx; 
+  overflow:hidden; 
+  background:#F6F8FF; 
+  min-height: 200rpx;
+}
+
+.movable-area {
+  width: 100%;
+  background: #F6F8FF;
+  overflow: hidden;
+  border-radius: 18rpx;
+}
+
+.movable-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img { 
+  width:100%; 
+  display:block; 
+  pointer-events: none;
+}
+
+/* 空状态样式 */
+.img-empty { 
+  position:relative; 
+  display:flex; 
+  flex-direction: column;
+  align-items:center; 
+  justify-content:center; 
+  color:#AAB3D6;
+  padding: 60rpx 0;
+  min-height: 240rpx;
+}
+
+.empty-icon {
+  font-size: 60rpx;
+  margin-bottom: 16rpx;
+  opacity: 0.6;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #7A88B9;
+  margin-bottom: 8rpx;
+}
+
+.empty-hint {
+  font-size: 24rpx;
+  color: #AAB3D6;
+}
+
+.overlay { 
+  position:absolute; 
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+/* 🔧 改进：标注点基础样式 */
+.dot {
+  position: absolute; 
+  width: 24rpx;
+  height: 24rpx;
+  border: 4rpx solid #fff; 
+  border-radius: 50%;
+  box-shadow: 0 0 8rpx rgba(0,0,0,.4), 0 0 16rpx rgba(0,0,0,.2);
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+
+/* 后端识别的标记点 - 蓝色 */
+.backend-dot {
+  background: #3b82f6;
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+/* 🔴 用户手动添加的标记点 - 醒目的红色 */
+.manual-dot {
+  background: #EF4444;
+  border-color: #FFF;
+  width: 13rpx;
+  height: 13rpx;
+  box-shadow: 
+    0 0 12rpx rgba(239, 68, 68, 0.6),
+    0 0 24rpx rgba(239, 68, 68, 0.3),
+    0 4rpx 8rpx rgba(0, 0, 0, 0.3);
+  animation: pulse-red 2s infinite;
+  z-index: 20;
+}
+
+/* 🆕 红色标记点的脉冲效果 */
+.dot-pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.4);
+  animation: pulse-wave 2s infinite;
+}
+
+/* 红色脉冲动画 */
+@keyframes pulse-red {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 
+      0 0 12rpx rgba(239, 68, 68, 0.6),
+      0 0 24rpx rgba(239, 68, 68, 0.3),
+      0 4rpx 8rpx rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: 
+      0 0 16rpx rgba(239, 68, 68, 0.8),
+      0 0 32rpx rgba(239, 68, 68, 0.4),
+      0 4rpx 8rpx rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* 脉冲波动画 */
+@keyframes pulse-wave {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* 🆕 悬浮撤销按钮 */
+.undo-fab {
+  position: fixed;
+  right: 30rpx;
+  bottom: 200rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 8rpx 24rpx rgba(239, 68, 68, 0.4),
+    0 4rpx 8rpx rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.undo-fab:active {
+  transform: scale(0.9);
+  box-shadow: 
+    0 4rpx 12rpx rgba(239, 68, 68, 0.4),
+    0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+.undo-icon {
+  font-size: 48rpx;
+  line-height: 1;
+  margin-bottom: 4rpx;
+}
+
+.undo-text {
+  font-size: 20rpx;
+  font-weight: 600;
+}
+
+/* 🆕 缩放指示器 */
+.zoom-indicator {
+  position: fixed;
+  top: 120rpx;
+  right: 30rpx;
+  padding: 12rpx 24rpx;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 24rpx;
+  font-weight: 600;
+  border-radius: 20rpx;
+  z-index: 101;
+  backdrop-filter: blur(10rpx);
+}
+
+/* 底部操作 */
+.footer { 
+  display:flex; 
+  gap:24rpx; 
+  padding:10rpx 0 24rpx; 
+}
+
+.btn { 
+  flex:1; 
+  height:96rpx; 
+  border-radius:22rpx; 
+  font-weight:700; 
+  font-size:30rpx; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  box-shadow:0 8rpx 16rpx rgba(75,104,246,.15); 
+  transition: all 0.3s ease;
+}
+
+.btn.primary { 
+  color:#fff; 
+  background:linear-gradient(90deg,#5B7CFF,#4B68F6); 
+}
+
+.btn.ghost { 
+  color:#4B68F6; 
+  background:#fff; 
+  border:2rpx solid #DCE3FF; 
+}
+
+.btn::after { border:none; }
+
+/* 🆕 禁用状态样式 */
+.btn[disabled] {
+  opacity: 0.5;
+  transform: none !important;
+}
+
+.btn:active:not([disabled]) {
+  transform: scale(0.98);
+}
+
+.safe-bottom { height:40rpx; }
+
+/* ========== 相机浮层样式 ========== */
+.cam-overlay{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 9999; 
+  display: flex; 
+  flex-direction: column;
+}
+
+.cam-header{
+  position:absolute; 
+  top:0; 
+  left:0; 
+  right:0;
+  height:90rpx; 
+  padding:0 24rpx;
+  display:flex; 
+  align-items:center; 
+  justify-content:space-between;
+  color:#fff; 
+  font-size:28rpx; 
+  z-index:3;
+}
+
+.cam-btn-cancel{
+  height:60rpx; 
+  line-height:60rpx; 
+  padding:0 20rpx; 
+  font-size:26rpx;
+  color:#fff; 
+  border:1px solid rgba(255,255,255,0.6);
+  background:transparent; 
+  border-radius:9999rpx;
+}
+
+/* 取景框：宽=屏宽，高=宽*(4/3)，限制最高 75vh */
+.cam-frame{
+  width:100vw;
+  height:calc(100vw * 1.3333);
+  max-height:75vh;
+  background:#000; 
+  overflow:hidden; 
+  border-radius:24rpx;
+  position:relative; 
+  z-index:2;
+  box-shadow:0 0 0 200vmax rgba(0,0,0,0.35);
+}
+
+/* 🆕 缩放控制滑块 */
+.zoom-control {
+  position: absolute;
+  bottom: 40rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 20rpx 30rpx;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50rpx;
+  backdrop-filter: blur(10rpx);
+  z-index: 10;
+}
+
+.zoom-slider {
+  flex: 1;
+  margin: 0;
+}
+
+.zoom-label {
+  color: white;
+  font-size: 24rpx;
+  font-weight: 600;
+  min-width: 60rpx;
+  text-align: center;
+}
+
+/* 四角参考线（可选） */
+.corner{
+  position:absolute; 
+  width:44rpx; 
+  height:44rpx; 
+  border:4rpx solid rgba(255,255,255,0.9);
+}
+
+.corner.tl{ left:12rpx; top:12rpx; border-right:none; border-bottom:none; border-radius:12rpx 0 0 0; }
+.corner.tr{ right:12rpx; top:12rpx; border-left:none; border-bottom:none; border-radius:0 12rpx 0 0; }
+.corner.bl{ left:12rpx; bottom:12rpx; border-right:none; border-top:none; border-radius:0 0 0 12rpx; }
+.corner.br{ right:12rpx; bottom:12rpx; border-left:none; border-top:none; border-radius:0 0 12rpx 0; }
+
+/* 快门区 */
+.cam-footer{ 
+  margin-top:24rpx; 
+  z-index:3; 
+}
+
+.cam-btn-shutter{
+  width:380rpx; 
+  height:108rpx; 
+  line-height:108rpx;
+  border-radius:9999rpx; 
+  font-weight:600; 
+  font-size:34rpx;
+  background:#5B7CFF; 
+  color:#fff;
+}

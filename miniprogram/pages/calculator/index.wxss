@@ -1,0 +1,214 @@
+/* 页面背景 */
+.calc-page {
+  min-height: 100vh;
+  background: #f6f9ff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  padding-bottom: calc(55px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+
+  box-sizing: border-box;
+  position: relative;
+}
+
+
+/* 显示区 */
+.display {
+  min-height: 260rpx;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 24rpx;
+}
+
+.result {
+  font-size: 96rpx;
+  font-weight: 500;
+  color: #1f2d3d;
+  text-align: right;
+  word-break: break-all;
+}
+
+/* 键盘 */
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+/* 每一行 */
+.row {
+  display: flex;
+  gap: 24rpx;
+}
+
+/* 通用按键 */
+.key {
+  flex: 1;
+  height: 140rpx;
+  border-radius: 70rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 48rpx;
+  font-weight: 500;
+}
+
+/* 数字键 */
+.key.num {
+  background: #eef2f7;
+  color: #1f2d3d;
+}
+
+/* 功能键（AC / ⌫ / %） */
+.key.func {
+  background: #e4ebf5;
+  color: #3b5cff;
+  font-size: 40rpx;
+}
+
+/* 运算符键 */
+.key.op {
+  background: #5f86ff;
+  color: #ffffff;
+}
+
+/* 等号键 */
+.key.eq {
+  background: linear-gradient(135deg, #5f86ff, #2fd1c5);
+  color: #ffffff;
+}
+
+/* 0 键（横向占 2 格） */
+.key.zero {
+  flex: 2;
+  justify-content:center;
+  padding-left: 0;
+}
+/* 右上角历史按钮 */
+.history-btn {
+  position: absolute;
+  top: 40rpx;
+  right: 32rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 36rpx;
+  background: #5f86ff;
+  color: #ffffff;
+  font-size: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10rpx 20rpx rgba(95,134,255,0.35);
+  z-index: 9999; 
+}
+
+/* 工具栏 */
+.toolbar {
+  display: flex;
+  gap: 16rpx;
+  margin: 10rpx 0 18rpx 0;
+}
+.key.back{
+  font-size: 56rpx;     /* 放大图标 */
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tbtn {
+  flex: 1;
+  height: 72rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.tbtn.ghost {
+  background: #eef2f7;
+  color: #3b5cff;
+}
+
+.tbtn.main {
+  background: linear-gradient(135deg, #5f86ff, #2fd1c5);
+  color: #ffffff;
+}
+
+/* 农用面板 */
+.agri {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 18rpx;
+  margin-bottom: 18rpx;
+  box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.06);
+}
+
+.agri-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #2b2f38;
+  margin-bottom: 12rpx;
+}
+
+.agri-form .field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f6f9ff;
+  border-radius: 16rpx;
+  padding: 14rpx 14rpx;
+  margin-top: 10rpx;
+}
+
+.agri-form .label {
+  font-size: 26rpx;
+  color: #7a8599;
+}
+
+.agri-form .input {
+  width: 260rpx;
+  text-align: right;
+  font-size: 28rpx;
+  color: #2b2f38;
+}
+
+.agri-actions {
+  display: flex;
+  gap: 14rpx;
+  margin-top: 12rpx;
+}
+
+.abtn {
+  flex: 1;
+  height: 72rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.abtn.ghost {
+  background: #eef2f7;
+  color: #3b5cff;
+}
+
+.abtn.main {
+  background: linear-gradient(135deg, #5f86ff, #2fd1c5);
+  color: #ffffff;
+}
+
+.agri-result {
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: #2b2f38;
+  background: #f2f5ff;
+  border-radius: 16rpx;
+  padding: 12rpx 14rpx;
+}

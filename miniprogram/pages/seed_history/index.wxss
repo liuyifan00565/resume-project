@@ -1,0 +1,381 @@
+.page {
+  min-height: 100vh;
+  background: #f4f7ff;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.topbar {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 18rpx;
+  margin-bottom: 16rpx;
+  border: 1rpx solid #e6edd7;
+}
+
+.summary {
+  font-size: 24rpx;
+  color: #4f6330;
+  margin-bottom: 12rpx;
+}
+
+.actions {
+  display: flex;
+  gap: 12rpx;
+}
+
+.btn {
+  flex: 1;
+  border-radius: 14rpx;
+  font-size: 24rpx;
+}
+
+.btn.ghost {
+  color: #4a6f2d;
+  background: #f5faeb;
+  border: 1rpx solid #d8e6ba;
+}
+
+.btn.danger {
+  color: #fff;
+  background: #e05a47;
+}
+
+.btn::after { border: none; }
+
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 18rpx;
+  margin-bottom: 12rpx;
+  border: 1rpx solid #e8eed9;
+}
+
+.row1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.row1-right {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.count {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #3f5f25;
+}
+
+.time {
+  font-size: 22rpx;
+  color: #8fa16c;
+}
+
+.row2 {
+  display: flex;
+  justify-content: space-between;
+  font-size: 24rpx;
+  color: #65794b;
+}
+
+/* 质量等级徽章 */
+.grade-badge {
+  font-size: 20rpx;
+  font-weight: 700;
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+}
+.grade-badge.grade-1 {
+  background: #DCFCE7;
+  color: #15803D;
+}
+.grade-badge.grade-2 {
+  background: #FEF9C3;
+  color: #A16207;
+}
+.grade-badge.grade-3 {
+  background: #FEE2E2;
+  color: #B91C1C;
+}
+
+/* 质检合格率行 */
+.row3 {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-top: 10rpx;
+  padding-top: 10rpx;
+  border-top: 1rpx solid #F0F4E8;
+}
+.q-label {
+  font-size: 22rpx;
+  color: #7C8F56;
+  flex-shrink: 0;
+}
+.q-bar-wrap {
+  flex: 1;
+  height: 10rpx;
+  background: #E5E7EB;
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+.q-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #5A8F3C, #77A94E);
+  border-radius: 999rpx;
+}
+.q-pct {
+  font-size: 22rpx;
+  color: #4F7D30;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.q-defect {
+  font-size: 20rpx;
+  color: #9CA3AF;
+  flex-shrink: 0;
+  max-width: 200rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emptyCard {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  border: 1rpx solid #e8eed9;
+  text-align: center;
+}
+
+.emptyTitle {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #415c2d;
+  margin-bottom: 10rpx;
+}
+
+.emptyDesc {
+  font-size: 24rpx;
+  color: #7f9461;
+  line-height: 1.6;
+}
+
+/* ======= 详情弹窗 ======= */
+.detail-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+}
+.detail-sheet {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: #fff;
+  border-radius: 28rpx 28rpx 0 0;
+  z-index: 101;
+  padding-bottom: env(safe-area-inset-bottom);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+.detail-header {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 32rpx 16rpx;
+  border-bottom: 1rpx solid #f0f4e8;
+  flex-shrink: 0;
+}
+.detail-title {
+  flex: 1;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1f2a55;
+}
+.detail-close {
+  font-size: 36rpx;
+  color: #9ca3af;
+  padding: 0 8rpx;
+}
+.detail-body {
+  flex: 1;
+  min-height: 0;
+  height: 0;  /* 让 scroll-view 在 flex 容器内正确填充 */
+}
+.detail-body-inner {
+  padding: 24rpx 32rpx 16rpx;
+}
+
+/* 汇总三格 */
+.d-summary {
+  display: flex;
+  background: #f7faf2;
+  border-radius: 16rpx;
+  border: 1rpx solid #e2ecd5;
+  margin-bottom: 24rpx;
+  overflow: hidden;
+}
+.d-s-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+}
+.d-s-item + .d-s-item {
+  border-left: 1rpx solid #e2ecd5;
+}
+.d-s-val {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #3f5f25;
+  line-height: 1.2;
+}
+.d-s-label {
+  font-size: 22rpx;
+  color: #7c8f56;
+  margin-top: 4rpx;
+}
+.d-val-plus { color: #c9702f; }
+.d-val-minus { color: #4e7a2e; }
+
+/* 普通行 */
+.d-row {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f4f7ee;
+  gap: 16rpx;
+}
+.d-row-label {
+  font-size: 26rpx;
+  color: #7c8f56;
+  min-width: 140rpx;
+  flex-shrink: 0;
+}
+.d-row-val {
+  flex: 1;
+  font-size: 26rpx;
+  color: #1f2a55;
+  text-align: right;
+  word-break: break-all;
+  white-space: normal;
+}
+.manual-pts {
+  color: #e05a47;
+  font-weight: 700;
+}
+.defect-txt {
+  color: #a16207;
+}
+
+/* 质检块 */
+.d-quality-block {
+  margin-top: 20rpx;
+  background: #f7faf2;
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+  border: 1rpx solid #e2ecd5;
+}
+.d-quality-title {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #4a6f2d;
+  margin-bottom: 12rpx;
+}
+.d-bar-wrap {
+  flex: 1;
+  height: 12rpx;
+  background: #e5e7eb;
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+.d-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #5a8f3c, #77a94e);
+  border-radius: 999rpx;
+}
+.d-no-quality {
+  margin-top: 20rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #b0b8c1;
+  padding: 20rpx;
+}
+
+/* 底部按钮 */
+.detail-footer {
+  display: flex;
+  gap: 20rpx;
+  padding: 16rpx 32rpx 24rpx;
+  flex-shrink: 0;
+  border-top: 1rpx solid #f0f4e8;
+}
+.d-btn-del {
+  flex: 1;
+  background: #fff0f0;
+  color: #e05a47;
+  border: 1rpx solid #fbbdbb;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+}
+.d-btn-del::after { border: none; }
+.d-btn-close {
+  flex: 2;
+  background: #4a6f2d;
+  color: #fff;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+}
+.d-btn-close::after { border: none; }
+
+/* ======= 批量选择 ======= */
+.card-selected {
+  border-color: #77a94e;
+  background: #f0f8e8;
+}
+.ck-wrap {
+  padding: 4rpx;
+}
+.ck {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 3rpx solid #b0b8c1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+.ck.ck-on {
+  background: #4a6f2d;
+  border-color: #4a6f2d;
+}
+.ck-tick {
+  font-size: 24rpx;
+  color: #fff;
+  line-height: 1;
+}
+.batch-bar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: #fff;
+  border-top: 1rpx solid #e8eed9;
+  padding: 16rpx 32rpx calc(16rpx + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  z-index: 50;
+}
+.batch-info {
+  flex: 1;
+  font-size: 28rpx;
+  color: #4a6f2d;
+  font-weight: 600;
+}
+.batch-btns {
+  display: flex;
+  gap: 16rpx;
+}

@@ -1,0 +1,13 @@
+[Unit]
+Description=考种智能体 LangGraph Agent
+After=network.target
+
+[Service]
+WorkingDirectory=/root/agent_server
+ExecStart=/root/anaconda3/envs/python3/bin/uvicorn app:app --host 0.0.0.0 --port 8002
+Restart=always
+RestartSec=5
+
+
+[Install]
+WantedBy=multi-user.target

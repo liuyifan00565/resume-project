@@ -1,0 +1,13 @@
+{
+  "navigationBarTitleText": "智种计",
+  "enablePullDownRefresh": false,
+  "enableShareAppMessage": true,
+  "enableShareTimeline": true,
+  "usingComponents": {},
+  "disableScroll": false,
+  "navigationBarBackgroundColor": "#5B7CFF",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#F4F7FF",
+  "backgroundTextStyle": "dark"
+  
+}

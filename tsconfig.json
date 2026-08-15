@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["miniprogram-api-typings"],
+    "typeRoots": ["./typings"]
+  },
+  "include": ["miniprogram/**/*.ts", "typings/**/*.d.ts"],
+  "exclude": ["node_modules", "cloudfunctions", "server"]
+}

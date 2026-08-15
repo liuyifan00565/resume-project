@@ -1,0 +1,3 @@
+<svg class="svg-icon" aria-hidden="true">
+  <use xlink:href="#{{id}}"></use>
+</svg>

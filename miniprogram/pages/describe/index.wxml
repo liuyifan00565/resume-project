@@ -1,0 +1,107 @@
+<view class="page">
+  <view class="profileCard">
+    <view class="profileTopRow">
+      <view class="profileTopTitle">个人信息</view>
+      <view wx:if="{{isLoggedIn}}" class="profileState online">已登录</view>
+      <view wx:else class="profileState offline">未登录</view>
+    </view>
+
+    <view class="profileMainRow">
+      <!-- 未登录：可手动上传头像 -->
+      <button
+        wx:if="{{!isLoggedIn}}"
+        class="avatarUpload"
+        open-type="chooseAvatar"
+        bindchooseavatar="onPickAvatar"
+      >
+        <image wx:if="{{profileDraft.avatarUrl}}" class="avatarImg" src="{{profileDraft.avatarUrl}}" mode="aspectFill"></image>
+        <view wx:else class="avatarPlaceholder">
+          <text class="avatarPlus">+</text>
+        </view>
+        <view class="avatarMask">上传头像</view>
+      </button>
+
+      <!-- 已登录：静态展示 -->
+      <view wx:else class="avatarStaticWrap">
+        <image wx:if="{{authUser.avatarUrl}}" class="avatarImg" src="{{authUser.avatarUrl}}" mode="aspectFill"></image>
+        <view wx:else class="avatarPlaceholder">
+          <text class="avatarPlus">{{authUser.nickName[0]}}</text>
+        </view>
+      </view>
+
+      <view class="profileInfoBlock">
+        <!-- 未登录：可手动填昵称 -->
+        <view wx:if="{{!isLoggedIn}}" class="nickEditor">
+          <view class="fieldLabel">昵称</view>
+          <input
+            class="nameInput"
+            type="nickname"
+            placeholder="请输入你的名字"
+            value="{{profileDraft.nickName}}"
+            bindinput="onNicknameInput"
+          />
+        </view>
+
+        <!-- 已登录：展示信息 -->
+        <view wx:else class="userInfoPanel">
+          <view class="userNameLarge">{{authUser.nickName}}</view>
+          <view class="userDesc">已绑定当前微信账号，作业历史仅对这个账号可见</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="profileActionRow">
+      <button wx:if="{{!isLoggedIn}}" class="wechatLoginBtn" bindtap="onQuickLogin" loading="{{loginBusy}}">微信快捷登录</button>
+      <button wx:else class="logoutOutlineBtn" bindtap="onLogout">退出当前账号</button>
+    </view>
+
+    <view class="statsRow">
+      <view class="statCard">
+        <view class="statHead">标签记录</view>
+        <view class="statValue">{{historyStats.tags}}</view>
+        <view class="statFoot">登录后可查看个人历史</view>
+      </view>
+
+      <view class="statCard">
+        <view class="statHead">识别记录</view>
+        <view class="statValue">{{historyStats.seedCounts || 0}}</view>
+        <view class="statFoot">种子计数历史按账号保存</view>
+      </view>
+
+    </view>
+  </view>
+
+  <view class="panel">
+    <view class="toolsToggle" bindtap="onGoTools">
+      <view class="toolsToggleBg toolsToggleBgA"></view>
+      <view class="toolsToggleBg toolsToggleBgB"></view>
+      <view class="toolsToggleSeed toolsToggleSeedA">🌱</view>
+      <view class="toolsToggleSeed toolsToggleSeedB">🌱</view>
+      <view class="toolsToggleEnter">点击进入</view>
+      <view class="toolsToggleTitle">我的作业工具</view>
+      <view class="toolsToggleSub">体验专属标签、报告等管理工具~</view>
+    </view>
+
+    <view class="toolsToggle" bindtap="onGoWeight">
+      <view class="toolsToggleBg toolsToggleBgA"></view>
+      <view class="toolsToggleBg toolsToggleBgB"></view>
+      <view class="toolsToggleSeed toolsToggleSeedA">🌱</view>
+      <view class="toolsToggleSeed toolsToggleSeedB">🌱</view>
+      <view class="toolsToggleEnter">点击进入</view>
+      <view class="toolsToggleTitle">籽粒称重</view>
+      <view class="toolsToggleSub">进入籽粒称重页面，继续查看和录入称重内容~</view>
+    </view>
+
+    <view class="toolsToggle" bindtap="onGoMeasure">
+      <view class="toolsToggleBg toolsToggleBgA"></view>
+      <view class="toolsToggleBg toolsToggleBgB"></view>
+      <view class="toolsToggleSeed toolsToggleSeedA">📐</view>
+      <view class="toolsToggleSeed toolsToggleSeedB">📏</view>
+      <view class="toolsToggleEnter">点击进入</view>
+      <view class="toolsToggleTitle">考种测量</view>
+      <view class="toolsToggleSub">测量株高、穗长、茎节等农艺性状数据~</view>
+    </view>
+  </view>
+
+  <view class="safeBottom"></view>
+</view>

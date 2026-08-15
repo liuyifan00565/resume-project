@@ -1,0 +1,54 @@
+<view class="page">
+  <view class="topbar">
+    <view class="summary">
+      <view class="s-item">
+        <text class="s-label">条数</text>
+        <text class="s-value">{{stats.total}}</text>
+      </view>
+      <view class="s-item">
+        <text class="s-label">最近结果</text>
+        <text class="s-value">{{stats.latest}}</text>
+      </view>
+    </view>
+
+    <view class="actions">
+      <button class="btn ghost" size="mini" bindtap="goCalculator">去计算器</button>
+      <button class="btn danger" size="mini" bindtap="onClearAll">清空</button>
+    </view>
+  </view>
+
+  <view wx:for="{{groups}}" wx:key="date" wx:for-item="g">
+    <view class="group-title">{{g.date}}</view>
+
+    <view class="card">
+      <view
+        class="row"
+        wx:for="{{g.items}}"
+        wx:key="id"
+        wx:for-item="it"
+        catchtap="onPick"
+        catchlongpress="onDeleteOne"
+        data-id="{{it.id}}"
+        data-expr="{{it.expr}}"
+      >
+        <view class="left">
+          <view class="expr">{{it.expr}}</view>
+          <view class="meta">{{it.time}}</view>
+        </view>
+
+        <view class="right">
+          <text class="eq">=</text>
+          <text class="res">{{it.res}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!groups.length}}">
+    暂无历史记录
+  </view>
+
+  <view class="tip">
+    <text>提示：点击记录可回填到计算器；长按可删除单条。</text>
+  </view>
+</view>

@@ -1,0 +1,178 @@
+<view class="page">
+
+  <!-- ========== Step 0: 选图 ========== -->
+  <view wx:if="{{step === 0}}" class="startScreen">
+    <view class="startEmoji">📐</view>
+    <view class="startTitle">考种测量</view>
+    <view class="startDesc">
+      拍照时在画面中放置已知尺寸的参考物（直尺、标准名片等），
+      系统自动推算比例，精确测量株高、穗长、茎节长、分蘖高等农艺性状。
+    </view>
+    <button class="startBtn primary" bindtap="takePhoto">拍照测量</button>
+    <button class="startBtn ghost" bindtap="selectPhoto">从相册选取</button>
+  </view>
+
+  <!-- ========== Step 1 & 2: 图片 + 操作区 ========== -->
+  <view wx:if="{{step >= 1}}" class="measureScreen">
+
+    <!-- 步骤指示 -->
+    <view class="stepBar">
+      <view class="stepItem {{step === 1 ? 'active' : 'done'}}">
+        <view class="stepNum">{{step === 1 ? '1' : '✓'}}</view>
+        <view class="stepLbl">校准参考物</view>
+      </view>
+      <view class="stepLine"></view>
+      <view class="stepItem {{step === 2 ? 'active' : ''}}">
+        <view class="stepNum">2</view>
+        <view class="stepLbl">测量性状</view>
+      </view>
+    </view>
+
+    <!-- ===== 照片区：支持双指缩放 + 单指平移 ===== -->
+    <view class="photo-wrap"
+      style="height:{{imgH > 0 ? imgH + 'px' : '320px'}};"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd">
+
+      <!--
+        transform-layer 承载图片和标注点。
+        所有点/线使用原始图像坐标存储，
+        父级 transform 负责缩放/平移，坐标值本身不随缩放改变。
+      -->
+      <view class="transform-layer"
+        style="width:{{imgW > 0 ? imgW + 'px' : '100%'}}; height:{{imgH > 0 ? imgH + 'px' : '320px'}}; transform:translate({{translateX}}px,{{translateY}}px) scale({{imageScale}}); transform-origin:0 0;">
+
+        <image class="photo" src="{{photoPath}}" mode="widthFix" bindload="onImgLoad" />
+
+        <!-- 标注覆盖层（与图片等大，坐标系对齐） -->
+        <view class="annot-layer" style="width:{{imgW > 0 ? imgW + 'px' : '100%'}}; height:{{imgH > 0 ? imgH + 'px' : '320px'}};">
+
+          <!-- 校准阶段：黄色 -->
+          <block wx:if="{{step === 1}}">
+            <view wx:if="{{calibLine}}" class="mline calib-line"
+              style="left:{{calibLine.left}}px; top:{{calibLine.top}}px; width:{{calibLine.width}}px; transform:rotate({{calibLine.angle}}deg);">
+            </view>
+            <view wx:for="{{calibPoints}}" wx:key="index" class="mdot calib-dot"
+              style="left:{{item.x}}px; top:{{item.y}}px;">
+            </view>
+          </block>
+
+          <!-- 测量阶段：历史绿色 + 当前蓝色 -->
+          <block wx:if="{{step === 2}}">
+            <block wx:for="{{results}}" wx:key="id" wx:for-item="r">
+              <view class="mline result-line"
+                style="left:{{r.line.left}}px; top:{{r.line.top}}px; width:{{r.line.width}}px; transform:rotate({{r.line.angle}}deg);">
+              </view>
+              <view class="result-tag" style="left:{{r.line.left}}px; top:{{r.line.top}}px;">
+                {{r.type}} {{r.cm}}cm
+              </view>
+              <view class="mdot result-dot" style="left:{{r.pt1.x}}px; top:{{r.pt1.y}}px;"></view>
+              <view class="mdot result-dot" style="left:{{r.pt2.x}}px; top:{{r.pt2.y}}px;"></view>
+            </block>
+
+            <view wx:if="{{currentLine}}" class="mline current-line"
+              style="left:{{currentLine.left}}px; top:{{currentLine.top}}px; width:{{currentLine.width}}px; transform:rotate({{currentLine.angle}}deg);">
+            </view>
+            <view wx:for="{{currentPoints}}" wx:key="index" class="mdot current-dot"
+              style="left:{{item.x}}px; top:{{item.y}}px;">
+            </view>
+          </block>
+
+        </view>
+      </view>
+
+      <!-- 缩放比例提示 + 重置（固定在图片区右上角，不随缩放移动） -->
+      <view wx:if="{{imageScale > 1}}" class="zoom-hud">
+        <text class="zoom-pct">{{zoomPct}}%</text>
+        <view class="zoom-reset" catchtap="resetZoom">重置</view>
+      </view>
+
+      <!-- 操作引导（固定在底部） -->
+      <view class="photo-hint">
+        <text wx:if="{{imageScale === 1}}">双指捏合可放大，放大后单指滑动</text>
+        <text wx:else>放大模式 · 单击标点</text>
+      </view>
+    </view>
+
+    <!-- ===== Step 1 控制面板：校准 ===== -->
+    <view wx:if="{{step === 1}}" class="ctrlPanel">
+      <view class="ctrlTitle">点击参考物的两个端点</view>
+      <view class="ctrlHint">已标记 {{calibPoints.length}} / 2 个点（黄色）· 可放大后再点</view>
+
+      <view class="calibRow">
+        <text class="calibLbl">参考物实际长度</text>
+        <input class="calibInput" type="digit" value="{{calibRealCm}}"
+          bindinput="onCalibInput" placeholder="10" />
+        <text class="calibUnit">cm</text>
+      </view>
+
+      <button class="confirmBtn {{calibPoints.length < 2 ? 'disabled' : ''}}"
+        disabled="{{calibPoints.length < 2}}"
+        bindtap="onCalibConfirm">
+        确认校准，开始测量
+      </button>
+      <button class="resetBtn" bindtap="resetAll">重新选图</button>
+    </view>
+
+    <!-- ===== Step 2 控制面板：测量 ===== -->
+    <view wx:if="{{step === 2}}" class="ctrlPanel">
+      <view class="ctrlTitle">选择项目后点击两端测量</view>
+
+      <view class="typeRow">
+        <view wx:for="{{measureTypes}}" wx:key="index"
+          class="typeChip {{measureType === item ? 'active' : ''}}"
+          data-type="{{item}}" bindtap="selectType">
+          {{item}}<text wx:if="{{index >= defaultTypeCount}}" class="chipX" data-index="{{index}}" catchtap="removeCustomType">×</text>
+        </view>
+      </view>
+
+      <!-- 自定义测量项目 -->
+      <view class="addTypeRow">
+        <input class="addTypeIpt" placeholder="自定义项目（如：穗下节）"
+          value="{{customTypeInput}}" bindinput="onCustomTypeInput" />
+        <view class="addTypeBtn" bindtap="addCustomType">添加</view>
+      </view>
+
+      <view class="progressRow">
+        <text class="ctrlHint">已标记 {{currentPoints.length}} / 2 个点（蓝色）</text>
+        <view class="textBtn red" bindtap="clearCurrent">清除本次</view>
+      </view>
+
+      <view wx:if="{{results.length > 0}}" class="resultList">
+        <view class="resultListHd">测量结果</view>
+        <view wx:for="{{results}}" wx:key="id" class="resultItem">
+          <view class="rTag">{{item.type}}</view>
+          <view class="rVal">{{item.cm}} cm</view>
+          <view class="rDel" data-id="{{item.id}}" bindtap="deleteResult">✕</view>
+        </view>
+      </view>
+
+      <view class="actionRow">
+        <button class="actionBtn primary" bindtap="saveResults">保存记录</button>
+        <button class="actionBtn" bindtap="backToCalib">重新校准</button>
+        <button class="actionBtn" bindtap="resetAll">重新拍照</button>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 历史记录卡片（始终可见，写在 measureScreen 外） -->
+  <view wx:if="{{measureHistory.length > 0}}" class="historyCard">
+    <view class="historyHd">
+      <text class="historyTitle">测量历史</text>
+      <text class="historyCount">{{measureHistory.length}} 条</text>
+    </view>
+    <view wx:for="{{measureHistory}}" wx:key="id" class="historyItem">
+      <view class="historyMeta">
+        <text class="historyTime">{{item.displayTime}}</text>
+        <view class="historyDel" data-id="{{item.id}}" bindtap="deleteHistoryItem">✕</view>
+      </view>
+      <view class="historyResults">
+        <text wx:for="{{item.results}}" wx:key="index" wx:for-item="r" class="historyTag">{{r.type}} {{r.cm}}cm  </text>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottomSpacer"></view>
+</view>

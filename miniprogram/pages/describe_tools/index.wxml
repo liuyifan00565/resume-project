@@ -1,0 +1,30 @@
+<view class="page">
+  <view class="headerCard">
+    <view class="headerSeed headerSeedLeft">🌱</view>
+    <view class="headerSeed headerSeedRight">🌱</view>
+    <view class="headerTitle">我的作业工具</view>
+    <view class="headerSub">点击任意模块进入对应功能</view>
+  </view>
+
+  <view class="grid">
+    <block wx:for="{{modules}}" wx:key="id">
+      <view class="toolCard" bindtap="onTapModule" data-path="{{item.path}}">
+        <view class="toolTop">
+          <view class="toolIconWrap">
+            <text class="toolIcon">{{item.icon}}</text>
+          </view>
+          <view class="toolGo">
+            <text class="goText">进入</text>
+            <text class="goArrow">›</text>
+          </view>
+        </view>
+
+        <view class="toolTitle">{{item.title}}</view>
+        <view class="toolDesc">{{item.desc}}</view>
+        <view class="toolLine"></view>
+      </view>
+    </block>
+  </view>
+
+  <view class="safeBottom"></view>
+</view>

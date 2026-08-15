@@ -1,0 +1,16 @@
+{
+  "name": "aiAgent",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@fontsource/noto-sans-sc": "^5.2.8",
+    "docx": "^8.5.0",
+    "mammoth": "^1.8.0",
+    "noto-sans-sc": "^37.0.0",
+    "openai": "^4.28.0",
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.15.0",
+    "wx-server-sdk": "latest",
+    "xlsx": "^0.18.5"
+  }
+}

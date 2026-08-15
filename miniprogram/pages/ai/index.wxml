@@ -1,0 +1,471 @@
+<!-- miniprogram/pages/ai/index.wxml -->
+<view class="page">
+
+  <!-- ================================================================ -->
+  <!-- ====================== 对话列表视图 ============================== -->
+  <!-- ================================================================ -->
+  <block wx:if="{{view === 'list'}}">
+    <view class="listPage">
+
+      <!-- 顶部导航 -->
+      <view class="listHeader">
+
+        <!-- 搜索模式 -->
+        <block wx:if="{{showSearch}}">
+          <view class="searchHeaderBar">
+            <text class="searchBarLeadIcon">🔍</text>
+            <input
+              class="searchBarInput"
+              placeholder="搜索对话关键词..."
+              placeholder-class="searchBarPlaceholder"
+              value="{{searchQuery}}"
+              bindinput="onSearchInput"
+              focus="{{true}}"
+              confirm-type="search"
+            />
+            <view class="searchCancelBtn" bindtap="closeSearch">
+              <text class="searchCancelText">取消</text>
+            </view>
+          </view>
+        </block>
+
+        <!-- 批量选择模式 -->
+        <block wx:elif="{{selectMode}}">
+          <view bindtap="cancelSelectMode" class="selectCancelBtn">
+            <text class="selectCancelText">取消</text>
+          </view>
+          <text class="listHeaderTitle">已选 {{selectedIds.length}} 个</text>
+          <view bindtap="selectAll" class="selectAllBtn">
+            <text class="selectAllText">全选</text>
+          </view>
+        </block>
+
+        <!-- 普通模式 -->
+        <block wx:else>
+          <view class="listHeaderLeft">
+            <!-- logo -->
+            <view class="listHeaderLogoWrap">
+              <image class="listHeaderLogo" src="/assets/logo.png" mode="aspectFill" />
+            </view>
+            <view class="listHeaderTextWrap">
+              <text class="listHeaderTitle">AI助手</text>
+              <view class="listHeaderByRow">
+                <view class="liveDot"></view>
+                <text class="listHeaderBy">智种计提供</text>
+              </view>
+            </view>
+          </view>
+          <view class="listHeaderBtns">
+            <view class="listIconBtn newConvHeaderBtn" bindtap="createConversation">
+              <text class="listIconBtnSvg">✏️</text>
+            </view>
+            <view class="listIconBtn" bindtap="onSearch">
+              <text class="listIconBtnSvg">🔍</text>
+            </view>
+          </view>
+        </block>
+
+      </view>
+
+      <!-- 空状态（不在搜索模式时显示） -->
+      <view wx:if="{{conversations.length === 0 && !showSearch}}" class="emptyState">
+        <text class="emptyTitle">开始你的第一个对话</text>
+        <text class="emptyDesc">与AI助手探讨种子分析、发芽率计算等农业问题</text>
+      </view>
+
+      <!-- 搜索结果 -->
+      <scroll-view wx:elif="{{showSearch}}" class="convList" scroll-y="true" show-scrollbar="false">
+        <view wx:if="{{!searchQuery}}" class="searchHintWrap">
+          <text class="searchHintText">输入关键词可快速定位历史对话</text>
+        </view>
+        <view wx:elif="{{searchResults.length === 0}}" class="searchEmptyWrap">
+          <text class="searchEmptyIcon">🔍</text>
+          <text class="searchEmptyText">未找到含「{{searchQuery}}」的对话</text>
+        </view>
+        <block wx:else>
+          <view class="searchResultCount">找到 {{searchResults.length}} 条结果</view>
+          <view
+            wx:for="{{searchResults}}"
+            wx:key="id"
+            class="convItem"
+            bindtap="openSearchResult"
+            data-id="{{item.id}}"
+          >
+            <view class="convAvatar avatarBlue">
+              <text class="convAvatarEmoji">🌱</text>
+            </view>
+            <view class="convBody">
+              <view class="convBodyTop">
+                <text class="convItemTitle">{{item.title || '新对话'}}</text>
+                <text class="convItemTime">{{item.timeStr}}</text>
+              </view>
+              <text class="convItemPreview">{{item.preview || '开始对话…'}}</text>
+            </view>
+          </view>
+        </block>
+        <view style="height: 160rpx;"></view>
+      </scroll-view>
+
+      <!-- 对话列表（按时间分组） -->
+      <scroll-view wx:elif="{{conversations.length > 0}}" class="convList" scroll-y="true" show-scrollbar="false" bindtap="closeSwipe">
+        <block wx:for="{{convGroups}}" wx:key="label" wx:for-item="group">
+          <view class="groupLabel">{{group.label}}</view>
+          <!-- 左滑删除容器 -->
+          <view
+            wx:for="{{group.items}}"
+            wx:key="id"
+            wx:for-item="item"
+            wx:for-index="idx"
+            class="convSwipeRow"
+            bindtouchstart="onSwipeTouchStart"
+            bindtouchmove="onSwipeTouchMove"
+            data-id="{{item.id}}"
+          >
+            <view
+              class="convItem {{selectMode && selectedSet[item.id] ? 'convItemSelected' : ''}} {{!selectMode && item.id === swipeOpenId ? 'convItemSwiped' : ''}}"
+              bindtap="onConvTap"
+              bindlongpress="onLongPressConv"
+              data-id="{{item.id}}"
+            >
+              <!-- 勾选框 -->
+              <view wx:if="{{selectMode}}" class="convCheckbox {{selectedSet[item.id] ? 'convCheckboxChecked' : ''}}">
+                <text wx:if="{{selectedSet[item.id]}}" class="checkIcon">✓</text>
+              </view>
+              <!-- 种子 emoji 头像 -->
+              <view wx:else class="convAvatar avatarBlue {{item.pinned ? 'avatarPinned' : ''}}">
+                <text class="convAvatarEmoji">🌱</text>
+              </view>
+              <!-- 文字区 -->
+              <view class="convBody">
+                <view class="convBodyTop">
+                  <text wx:if="{{item.pinned}}" class="pinnedTag">📌</text>
+                  <text class="convItemTitle" catchtap="openRenameModal" data-id="{{item.id}}">{{item.title || '新对话'}}</text>
+                  <text class="convItemTime">{{item.timeStr}}</text>
+                </view>
+                <text class="convItemPreview">{{item.preview || '开始对话…'}}</text>
+              </view>
+            </view>
+            <!-- 左滑操作按钮：置顶 + 删除 -->
+            <view class="swipePinBtn" bindtap="swipePinConv" data-id="{{item.id}}" data-pinned="{{item.pinned}}" wx:if="{{!selectMode}}">
+              <text class="swipePinTxt">{{item.pinned ? '取消\n置顶' : '置顶'}}</text>
+            </view>
+            <view class="swipeDeleteBtn" bindtap="swipeDeleteConv" data-id="{{item.id}}" wx:if="{{!selectMode}}">
+              <text class="swipeDeleteTxt">删除</text>
+            </view>
+          </view>
+        </block>
+        <view style="height: 160rpx;"></view>
+      </scroll-view>
+
+      <!-- 批量操作栏 -->
+      <view class="batchActionBar" wx:if="{{selectMode}}">
+        <view
+          class="batchPinBtn {{selectedIds.length === 0 ? 'batchBtnDisabled' : ''}}"
+          bindtap="pinSelected"
+        >
+          <text class="batchBtnText">置顶</text>
+          <view class="batchBtnBadge" wx:if="{{selectedIds.length > 0}}">
+            <text class="batchBtnBadgeText">{{selectedIds.length}}</text>
+          </view>
+        </view>
+        <view
+          class="batchDeleteBtn {{selectedIds.length === 0 ? 'batchBtnDisabled' : ''}}"
+          bindtap="deleteSelected"
+        >
+          <text class="batchBtnText">删除</text>
+          <view class="batchBtnBadge batchBtnBadgeRed" wx:if="{{selectedIds.length > 0}}">
+            <text class="batchBtnBadgeText">{{selectedIds.length}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 重命名弹窗 -->
+      <view wx:if="{{renameModalVisible}}" class="renameMask" catchtap="cancelRename">
+        <view class="renameModal" catchtap="">
+          <view class="renameModalTitle">修改标题</view>
+          <input
+            class="renameInput"
+            value="{{renamingTitle}}"
+            bindinput="onRenameTitleInput"
+            placeholder="输入对话标题..."
+            maxlength="30"
+            focus="{{renameModalVisible}}"
+            confirm-type="done"
+            bindconfirm="confirmRename"
+          />
+          <view class="renameModalBtns">
+            <view class="renameBtn renameCancel" bindtap="cancelRename">取消</view>
+            <view class="renameBtn renameConfirm" bindtap="confirmRename">确认</view>
+          </view>
+        </view>
+      </view>
+
+    </view>
+  </block>
+
+
+  <!-- ========================= 聊天视图 =============================== -->
+  <block wx:if="{{view === 'chat'}}">
+    <view class="chatPage">
+
+      <!-- 顶部导航 -->
+      <view class="chatNav">
+        <view class="chatNavBack" bindtap="backToList">
+          <text class="backIcon">‹</text>
+        </view>
+        <text class="chatNavTitle">{{convTitle}}</text>
+        <view class="chatNavRight">
+          <view class="chatNavIconBtn" bindtap="toggleConvMenu">
+            <text class="chatNavIconText">···</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 菜单遮罩 & 菜单 -->
+      <view wx:if="{{showConvMenu}}" class="menuMask" catchtap="toggleConvMenu"></view>
+      <view wx:if="{{showConvMenu}}" class="convMenu">
+        <view class="convMenuItem danger" bindtap="deleteCurrentConversation">
+          <text class="convMenuItemIcon">🗑</text>
+          <text class="convMenuItemText">删除对话</text>
+        </view>
+      </view>
+
+      <!-- 聊天滚动区 -->
+      <scroll-view
+        class="chatScroll"
+        scroll-y="true"
+        scroll-with-animation="true"
+        scroll-into-view="{{scrollIntoView}}"
+        show-scrollbar="false"
+        enhanced="true"
+      >
+        <view wx:if="{{currentContextHint}}" class="contextHintBar">
+          <text class="contextHintText">📎 {{currentContextHint}}</text>
+        </view>
+
+        <!-- 推荐词条（样式保持不变） -->
+        <view class="quickStartSection">
+          <view class="sectionHeader">
+            <view class="headerContent">
+              <text class="sparkleIcon">✨</text>
+              <text class="headerTitle">猜你想问</text>
+            </view>
+            <view class="headerRight">
+              <text class="aiDisclaimer">内容由AI生成，仅供参考</text>
+              <text class="headerHint">左右滑动</text>
+            </view>
+          </view>
+          <scroll-view class="cardsScroller" scroll-x="true" show-scrollbar="false" enhanced="true">
+            <view class="scrollContent">
+              <view class="floatingCard featured" bindtap="onTapSuggestion" data-text="帮我分析这张种子图片的计数和质量">
+                <view class="cardGradient"></view>
+                <view class="cardIconBox"><text class="cardBigIcon">📸</text></view>
+                <view class="cardTextArea">
+                  <text class="cardMainTitle">智能图片分析</text>
+                  <text class="cardSubtext">AI识别 · 精准计数</text>
+                </view>
+                <view class="cardShine"></view>
+              </view>
+              <view class="floatingCard" bindtap="onTapSuggestion" data-text="如何提高种子拍摄质量？拍照时要注意什么？">
+                <view class="cardIconBox secondary"><text class="cardBigIcon">💡</text></view>
+                <view class="cardTextArea">
+                  <text class="cardMainTitle">拍摄技巧</text>
+                  <text class="cardSubtext">光照 · 背景 · 角度</text>
+                </view>
+              </view>
+              <view class="floatingCard" bindtap="onTapSuggestion" data-text="帮我计算发芽率">
+                <view class="cardIconBox tertiary"><text class="cardBigIcon">📊</text></view>
+                <view class="cardTextArea">
+                  <text class="cardMainTitle">发芽率计算</text>
+                  <text class="cardSubtext">专业算法 · 精确评估</text>
+                </view>
+              </view>
+              <view class="floatingCard" bindtap="onTapSuggestion" data-text="种子粘连重叠怎么办？如何减少误差？">
+                <view class="cardIconBox quaternary"><text class="cardBigIcon">🔍</text></view>
+                <view class="cardTextArea">
+                  <text class="cardMainTitle">质量检测</text>
+                  <text class="cardSubtext">粘连识别 · 误差分析</text>
+                </view>
+              </view>
+              <view class="floatingCard" bindtap="onTapSuggestion" data-text="如何抽样才科学？批次和重复怎么设计？">
+                <view class="cardIconBox"><text class="cardBigIcon">📋</text></view>
+                <view class="cardTextArea">
+                  <text class="cardMainTitle">抽样方法</text>
+                  <text class="cardSubtext">科学抽样 · 数据可靠</text>
+                </view>
+              </view>
+              <view class="scrollEndSpacer"></view>
+            </view>
+          </scroll-view>
+        </view>
+
+        <!-- 消息列表 -->
+        <view class="msgList">
+          <block wx:for="{{messages}}" wx:key="index">
+            <view id="msg-{{index}}" class="msgRow {{item.role}}Row">
+
+              <!-- ===== AI 消息 ===== -->
+              <block wx:if="{{item.role === 'assistant'}}">
+                <view class="aiMsgWrap">
+                  <!-- 头像行：头像 + AI生成标签 -->
+                  <view class="aiMsgTopRow">
+                    <view class="aiAvt">
+                      <image class="aiAvtImg" src="/assets/logo.png" mode="aspectFill" />
+                    </view>
+                    <view class="aiGenTag">
+                      <text class="aiGenTagStar">✨</text>
+                      <text class="aiGenTagTxt">AI生成</text>
+                    </view>
+                  </view>
+
+                  <!-- 消息气泡 -->
+                  <view class="aiBubble {{!item.isTyping ? 'aiBubbleLoaded' : ''}}">
+                    <!-- 文件类型消息 -->
+                    <block wx:if="{{item.type === 'file'}}">
+                      <view class="fileCard aiFileCard" bindtap="previewFileMessage" data-index="{{index}}">
+                        <text class="fileCardIcon">{{item.fileExt === 'pdf' ? '📕' : item.fileExt === 'docx' || item.fileExt === 'doc' ? '📘' : item.fileExt === 'xlsx' || item.fileExt === 'xls' ? '📗' : '📄'}}</text>
+                        <view class="fileCardInfo">
+                          <text class="fileCardName">{{item.fileName}}</text>
+                          <text class="fileCardHint">AI已生成，点击查看</text>
+                        </view>
+                      </view>
+                      <text wx:if="{{item.content}}" class="bubbleTxt">{{item.content}}</text>
+                    </block>
+                    <!-- 普通文字 -->
+                    <block wx:else>
+                      <text class="bubbleTxt" user-select="true" wx:if="{{!item.isTyping}}">{{item.versions[item.activeVersionIndex].content}}</text>
+                      <view wx:if="{{item.isTyping}}" class="typingRow">
+                        <view class="typingDot"></view>
+                        <view class="typingDot"></view>
+                        <view class="typingDot"></view>
+                      </view>
+                      <image
+                        wx:if="{{item.yoloImageBase64}}"
+                        src="{{item.yoloImageBase64}}"
+                        mode="widthFix"
+                        class="yoloResultImage"
+                        bindtap="previewYoloImage"
+                        data-src="{{item.yoloImageBase64}}"
+                      />
+                    </block>
+                    <!-- 下载导出按钮（不变） -->
+                    <view wx:if="{{!item.isTyping && item.type !== 'file'}}" class="downloadBtnInBubble" bindtap="downloadMessage" data-index="{{index}}">
+                      <text class="downloadBtnIcon">⬇</text>
+                    </view>
+                  </view>
+
+                  <!-- AI 操作区 -->
+                  <view wx:if="{{!item.isTyping && item.type !== 'file'}}" class="aiMsgMeta">
+                    <text class="msgTime">{{item.time}}</text>
+                    <view class="msgActions">
+                      <view class="copyIconBtn" bindtap="copyActiveVersion" data-index="{{index}}">
+                        <text class="copyIconTxt">⎘</text>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+              </block>
+
+              <!-- ===== 用户消息 ===== -->
+              <block wx:elif="{{item.role === 'user'}}">
+                <view class="userMsgWrap">
+
+                  <!-- 图片消息 -->
+                  <block wx:if="{{item.type === 'image'}}">
+                    <view class="userImgBlock" bindtap="previewImage" data-src="{{item.imageUrl}}">
+                      <image class="userMsgImg" mode="widthFix" src="{{item.imageUrl}}" />
+                    </view>
+                    <view wx:if="{{item.content}}" class="userBubble">
+                      <text class="bubbleTxt" user-select="true" selectable="true">{{item.content}}</text>
+                    </view>
+                  </block>
+
+                  <!-- 文件消息 -->
+                  <block wx:elif="{{item.type === 'file'}}">
+                    <view class="fileCard userFileCard" bindtap="previewFileMessage" data-index="{{index}}">
+                      <text class="fileCardIcon">{{item.fileExt === 'pdf' ? '📕' : item.fileExt === 'docx' || item.fileExt === 'doc' ? '📘' : item.fileExt === 'xlsx' || item.fileExt === 'xls' ? '📗' : '📄'}}</text>
+                      <view class="fileCardInfo">
+                        <text class="fileCardName">{{item.fileName}}</text>
+                        <text class="fileCardHint">文件已上传</text>
+                      </view>
+                    </view>
+                    <view wx:if="{{item.content}}" class="userBubble">
+                      <text class="bubbleTxt" user-select="true" selectable="true">{{item.content}}</text>
+                    </view>
+                  </block>
+
+                  <!-- 普通文字 -->
+                  <block wx:else>
+                    <view class="userBubble">
+                      <text class="bubbleTxt" user-select="true" selectable="true">{{item.content}}</text>
+                    </view>
+                  </block>
+
+                  <!-- 用户操作区 -->
+                  <view class="userMsgMeta">
+                    <view class="copyIconBtn" bindtap="copyText" data-text="{{item.content}}">
+                      <text class="copyIconTxt">⎘</text>
+                    </view>
+                    <text class="msgTime">{{item.time}}</text>
+                  </view>
+                </view>
+              </block>
+
+            </view>
+          </block>
+          <view style="height: 140rpx;"></view>
+        </view>
+      </scroll-view>
+
+      <!-- 底部输入栏 -->
+      <view class="inputBar">
+        <!-- 图片预览 -->
+        <view wx:if="{{pendingImage}}" class="pendingPreview">
+          <image class="pendingPreviewImg" mode="aspectFill" src="{{pendingImage.url}}" />
+          <view class="pendingRemove" bindtap="removePendingImage"><text>×</text></view>
+        </view>
+        <!-- 文件预览 -->
+        <view wx:if="{{pendingFile}}" class="pendingFilePreview">
+          <text class="pendingFileIcon">{{pendingFile.icon}}</text>
+          <text class="pendingFileName">{{pendingFile.name}}</text>
+          <view class="pendingRemove" bindtap="removePendingFile"><text>×</text></view>
+        </view>
+        <!-- 输入行 -->
+        <view class="inputRow">
+          <view class="inputIconBtn" bindtap="showImageOptions">
+            <text class="inputIconTxt">📷</text>
+          </view>
+          <view class="inputIconBtn" bindtap="showFileOptions">
+            <text class="inputIconTxt">🔗</text>
+          </view>
+          <view class="inputBox">
+            <textarea
+              class="inputField"
+              placeholder="追问、上传或描述..."
+              placeholder-class="inputPlaceholder"
+              value="{{inputText}}"
+              bindinput="onInput"
+              bindfocus="onInputFocus"
+              bindblur="onInputBlur"
+              bindconfirm="onSend"
+              confirm-type="send"
+              auto-height="{{true}}"
+              maxlength="-1"
+              show-confirm-bar="{{false}}"
+              adjust-position="{{true}}"
+              cursor-spacing="16"
+              hold-keyboard="{{true}}"
+            />
+          </view>
+          <view class="sendBtn {{(!inputText && !pendingImage && !pendingFile) || isLoading ? 'sendBtnDisabled' : 'sendBtnActive'}}" bindtap="onSend">
+            <text class="sendBtnIcon {{(!inputText && !pendingImage && !pendingFile) || isLoading ? '' : 'sendBtnIconActive'}}">{{isLoading ? '⏳' : '➢'}}</text>
+          </view>
+        </view>
+        <!-- 安全区域占位 -->
+        <view class="inputSafeArea"></view>
+      </view>
+
+    </view>
+  </block>
+
+</view>

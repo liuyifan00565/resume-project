@@ -1,0 +1,158 @@
+/* pages/describe_tools/index.wxss */
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f4f6f8 0%, #f7f8fa 34%, #ffffff 100%);
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.headerCard {
+  border-radius: 24rpx;
+  padding: 24rpx;
+  background: linear-gradient(135deg, #33c875 0%, #1bb86b 50%, #79dfa7 100%);
+  box-shadow: 0 14rpx 34rpx rgba(27, 184, 107, 0.2);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.headerSeed {
+  position: absolute;
+  top: 16rpx;
+  font-size: 34rpx;
+  opacity: 0.9;
+  animation: headerSeedFloat 2.6s ease-in-out infinite;
+}
+
+.headerSeedLeft {
+  left: 18rpx;
+}
+
+.headerSeedRight {
+  right: 18rpx;
+  animation-delay: 0.8s;
+}
+
+.headerTitle {
+  color: #fffdf8;
+  display: inline-block;
+  width: 100%;
+  font-size: 44rpx;
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: 0;
+  font-family: "YouYuan", "幼圆", "Arial Rounded MT Bold", "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif;
+  text-shadow: 0 3rpx 0 rgba(93, 157, 116, 0.34), 0 9rpx 16rpx rgba(121, 187, 144, 0.26);
+  -webkit-text-stroke: 1rpx rgba(255, 255, 255, 0.68);
+  animation: titlePop 2.2s ease-in-out infinite;
+}
+
+.headerSub {
+  margin-top: 8rpx;
+  color: rgba(255, 254, 250, 0.95);
+  font-size: 24rpx;
+  text-align: center;
+}
+
+@keyframes titlePop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1) scaleY(0.88);
+  }
+  50% {
+    transform: translateY(-2rpx) scale(1.04) scaleY(0.88);
+  }
+}
+
+@keyframes headerSeedFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5rpx) rotate(-8deg);
+  }
+}
+
+.grid {
+  margin-top: 18rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.toolCard {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 20rpx 18rpx 18rpx;
+  box-shadow: 0 10rpx 28rpx rgba(15, 41, 77, 0.06);
+  border: 1px solid #edf0f3;
+}
+
+.toolTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toolIconWrap {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(180deg, #f3f5f7 0%, #fbfbfc 100%);
+  border: 1px solid #eceff2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolIcon {
+  font-size: 36rpx;
+}
+
+.toolGo {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 10rpx 14rpx;
+  border-radius: 999rpx;
+  background: #f5f7f9;
+  border: 1px solid #eceff2;
+  color: #3c434a;
+  font-size: 22rpx;
+}
+
+.goText {
+  font-weight: 700;
+}
+
+.goArrow {
+  font-size: 28rpx;
+  line-height: 1;
+}
+
+.toolTitle {
+  margin-top: 12rpx;
+  font-size: 30rpx;
+  font-weight: 900;
+  color: #1f2329;
+}
+
+.toolDesc {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #808893;
+  line-height: 1.5;
+  min-height: 68rpx;
+}
+
+.toolLine {
+  margin-top: 14rpx;
+  height: 6rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, rgba(34, 192, 99, 0.22) 0%, rgba(34, 192, 99, 0.02) 100%);
+}
+
+.safeBottom {
+  height: 40rpx;
+}

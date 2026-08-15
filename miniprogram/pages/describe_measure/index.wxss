@@ -1,0 +1,540 @@
+/* pages/describe_measure/index.wxss */
+
+.page {
+  min-height: 100vh;
+  background: #f4f6f8;
+}
+
+/* ===== 选图页 ===== */
+.startScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 48rpx 60rpx;
+}
+
+.startEmoji {
+  font-size: 110rpx;
+  margin-bottom: 28rpx;
+}
+
+.startTitle {
+  font-size: 52rpx;
+  font-weight: 900;
+  color: #1f2329;
+  margin-bottom: 24rpx;
+  letter-spacing: 2rpx;
+}
+
+.startDesc {
+  font-size: 26rpx;
+  color: #6f7a88;
+  line-height: 1.8;
+  text-align: center;
+  margin-bottom: 64rpx;
+}
+
+.startBtn {
+  width: 100%;
+  height: 96rpx;
+  border-radius: 24rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+  margin-bottom: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.startBtn.primary {
+  background: linear-gradient(135deg, #23ba72, #16a764);
+  color: #fff;
+  border: none;
+  box-shadow: 0 8rpx 24rpx rgba(22, 167, 100, 0.3);
+}
+
+.startBtn.ghost {
+  background: #fff;
+  color: #23ba72;
+  border: 2rpx solid #23ba72;
+}
+
+.startBtn::after { border: none; }
+
+/* ===== 测量页整体 ===== */
+.measureScreen {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* 步骤条 */
+.stepBar {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 48rpx;
+  background: #fff;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.stepNum {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #9aa3ad;
+  font-size: 22rpx;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepItem.active .stepNum {
+  background: #23ba72;
+  color: #fff;
+}
+
+.stepItem.done .stepNum {
+  background: #bbf7d0;
+  color: #16a34a;
+  font-size: 26rpx;
+}
+
+.stepLbl {
+  font-size: 22rpx;
+  color: #9aa3ad;
+}
+
+.stepItem.active .stepLbl {
+  color: #23ba72;
+  font-weight: 700;
+}
+
+.stepLine {
+  flex: 1;
+  height: 2rpx;
+  background: #e5e7eb;
+  margin: 0 16rpx;
+  margin-bottom: 20rpx;
+}
+
+/* ===== 照片区 ===== */
+.photo-wrap {
+  position: relative;
+  width: 100%;
+  background: #111;
+  overflow: hidden;
+}
+
+/* 承载图片和标注的可变换层 */
+.transform-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.photo {
+  width: 100%;
+  display: block;
+}
+
+/* 标注层与图片完全重叠 */
+.annot-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+/* 缩放比例 HUD（不随 transform 移动） */
+.zoom-hud {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 9999rpx;
+  padding: 8rpx 20rpx;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+.zoom-pct {
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.zoom-reset {
+  color: #86efac;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+/* 底部操作引导 */
+.photo-hint {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 10rpx 0;
+  background: rgba(0, 0, 0, 0.38);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 22rpx;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* ===== 点（随 transform 一起缩放，视觉上随放大变大，有助于精准定位） ===== */
+.mdot {
+  position: absolute;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  border: 2rpx solid rgba(255, 255, 255, 0.9);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 6rpx rgba(0, 0, 0, 0.6);
+}
+
+.calib-dot   { background: #f59e0b; }
+.current-dot { background: #3b82f6; }
+.result-dot  { background: #22c55e; width: 10rpx; height: 10rpx; }
+
+/* ===== 线 ===== */
+.mline {
+  position: absolute;
+  height: 3rpx;
+  transform-origin: 0 50%;
+  border-radius: 2rpx;
+}
+
+.calib-line   { background: #f59e0b; }
+.current-line { background: #3b82f6; }
+.result-line  { background: rgba(34, 197, 94, 0.9); height: 2rpx; }
+
+/* 结果标签 */
+.result-tag {
+  position: absolute;
+  transform: translate(0, -120%);
+  background: rgba(22, 163, 74, 0.92);
+  color: #fff;
+  font-size: 18rpx;
+  font-weight: 700;
+  padding: 4rpx 12rpx;
+  border-radius: 10rpx;
+  white-space: nowrap;
+}
+
+/* ===== 控制面板 ===== */
+.ctrlPanel {
+  background: #fff;
+  padding: 28rpx 24rpx 40rpx;
+  flex: 1;
+}
+
+.ctrlTitle {
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #1f2329;
+  margin-bottom: 8rpx;
+}
+
+.ctrlHint {
+  font-size: 24rpx;
+  color: #9aa3ad;
+}
+
+/* 校准输入行 */
+.calibRow {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  background: #f4f6f8;
+  border-radius: 16rpx;
+  padding: 18rpx 20rpx;
+  margin: 24rpx 0;
+}
+
+.calibLbl {
+  font-size: 26rpx;
+  color: #5f6b7a;
+  flex: 1;
+}
+
+.calibInput {
+  width: 100rpx;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #1f2329;
+  border-bottom: 3rpx solid #23ba72;
+  padding-bottom: 4rpx;
+}
+
+.calibUnit {
+  font-size: 26rpx;
+  color: #5f6b7a;
+}
+
+.confirmBtn {
+  width: 100%;
+  height: 90rpx;
+  border-radius: 22rpx;
+  background: linear-gradient(135deg, #23ba72, #16a764);
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 8rpx 20rpx rgba(22, 167, 100, 0.25);
+  margin-bottom: 16rpx;
+}
+
+.confirmBtn.disabled { opacity: 0.45; }
+.confirmBtn::after { border: none; }
+
+.resetBtn {
+  width: 100%;
+  height: 80rpx;
+  border-radius: 20rpx;
+  background: #f4f6f8;
+  color: #6f7a88;
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+}
+
+.resetBtn::after { border: none; }
+
+/* 测量类型选择器 */
+.typeRow {
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
+  margin: 20rpx 0 16rpx;
+}
+
+.typeChip {
+  padding: 12rpx 30rpx;
+  border-radius: 9999rpx;
+  background: #f0fdf4;
+  color: #16a34a;
+  font-size: 26rpx;
+  font-weight: 600;
+  border: 2rpx solid #bbf7d0;
+}
+
+.typeChip.active {
+  background: #23ba72;
+  color: #fff;
+  border-color: #23ba72;
+}
+
+.chipX {
+  margin-left: 6rpx;
+  font-size: 22rpx;
+  opacity: 0.75;
+  font-weight: 400;
+}
+
+/* 进度行 */
+.progressRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.textBtn {
+  font-size: 24rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 9999rpx;
+}
+
+.textBtn.red { color: #e05252; }
+
+/* 结果列表 */
+.resultList {
+  background: #f4f6f8;
+  border-radius: 18rpx;
+  padding: 16rpx 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.resultListHd {
+  font-size: 22rpx;
+  color: #9aa3ad;
+  margin-bottom: 12rpx;
+  font-weight: 600;
+}
+
+.resultItem {
+  display: flex;
+  align-items: center;
+  padding: 14rpx 0;
+  border-bottom: 1rpx solid #e9ecef;
+}
+
+.resultItem:last-child { border-bottom: none; }
+
+.rTag {
+  font-size: 26rpx;
+  color: #1f2329;
+  flex: 1;
+}
+
+.rVal {
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #16a34a;
+  margin-right: 24rpx;
+}
+
+.rDel {
+  font-size: 24rpx;
+  color: #c4cad4;
+  padding: 6rpx 10rpx;
+}
+
+/* 底部操作按钮 */
+.actionRow {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 16rpx;
+}
+
+.actionBtn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 20rpx;
+  background: #f4f6f8;
+  color: #5f6b7a;
+  font-size: 26rpx;
+  font-weight: 600;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionBtn::after { border: none; }
+
+.actionBtn.primary {
+  background: linear-gradient(135deg, #23ba72, #16a764);
+  color: #fff;
+  box-shadow: 0 6rpx 16rpx rgba(22, 167, 100, 0.25);
+}
+
+/* 自定义测量项目输入行 */
+.addTypeRow {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin: 12rpx 0 20rpx;
+}
+
+.addTypeIpt {
+  flex: 1;
+  height: 68rpx;
+  background: #f4f6f8;
+  border-radius: 16rpx;
+  padding: 0 20rpx;
+  font-size: 26rpx;
+  color: #1f2329;
+  border: 1rpx solid #e5e7eb;
+}
+
+.addTypeBtn {
+  height: 68rpx;
+  padding: 0 28rpx;
+  border-radius: 16rpx;
+  background: #23ba72;
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* 历史记录卡片 */
+.historyCard {
+  margin: 20rpx 24rpx 0;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 28rpx 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+
+.historyHd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.historyTitle {
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #1f2329;
+}
+
+.historyCount {
+  font-size: 24rpx;
+  color: #9aa3ad;
+}
+
+.historyItem {
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.historyItem:last-child { border-bottom: none; }
+
+.historyMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.historyTime {
+  font-size: 22rpx;
+  color: #9aa3ad;
+}
+
+.historyDel {
+  font-size: 24rpx;
+  color: #c4cad4;
+  padding: 6rpx 12rpx;
+}
+
+.historyResults {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.historyTag {
+  background: #f0fdf4;
+  color: #16a34a;
+  font-size: 24rpx;
+  font-weight: 600;
+  padding: 6rpx 18rpx;
+  border-radius: 9999rpx;
+  border: 1rpx solid #bbf7d0;
+}
+
+.bottomSpacer { height: 60rpx; }

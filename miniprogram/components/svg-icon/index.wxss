@@ -1,0 +1,6 @@
+.svg-icon{
+  width: 44rpx;
+  height: 44rpx;
+  fill: currentColor;
+  display: block;
+}

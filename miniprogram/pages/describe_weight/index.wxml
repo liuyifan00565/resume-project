@@ -1,0 +1,109 @@
+<view class="page">
+
+  <view class="headerCard">
+    <view class="headerSeed headerSeedLeft">📶</view>
+    <view class="headerSeed headerSeedRight">🔋</view>
+    <view class="headerTitle">籽粒称重</view>
+    <view class="headerSub">"智种计"便携式检测小盒 · Wi-Fi 称重通道</view>
+  </view>
+
+  <view class="tipsCard cardAnimated">
+    <view class="tipsTitle">使用提示</view>
+    <view class="tipsText">要使用"智种计"便携式检测小盒，需要确保设备已接入 Wi-Fi 网络。</view>
+  </view>
+
+  <view class="statusCard cardAnimated {{serverConnected ? 'statusCardActive' : ''}}">
+    <view class="statusRow">
+      <view class="statusLabel">服务器状态</view>
+      <view class="statusValue {{isSampling ? 'linking' : (serverConnected ? '' : 'disconnected')}}">
+        {{isSampling ? '采样中' : (serverConnected ? '已连接' : serverStateText)}}
+      </view>
+    </view>
+    <view class="statusHint">{{statusText}}</view>
+  </view>
+
+  <view class="weightCard cardAnimated {{hasResult ? 'weightCardSuccess' : ''}} {{isSampling ? 'statusCardActive' : ''}}">
+    <view class="weightTop">
+      <view class="weightTitle">称重数据</view>
+      <button
+        class="fetchBtn {{isSampling ? 'fetchBtnSampling' : ''}} {{isFetching && !isSampling ? 'fetchBtnLoading' : ''}}"
+        disabled="{{isSampling || isFetching}}"
+        bindtap="onFetchWeight"
+      >
+        <block wx:if="{{isSampling}}">{{countdown}}s</block>
+        <block wx:else>获取</block>
+      </button>
+    </view>
+
+    <!-- 采样动画 -->
+    <view wx:if="{{isSampling}}" class="samplingBar">
+      <view class="samplingDot samplingDot1"></view>
+      <view class="samplingDot samplingDot2"></view>
+      <view class="samplingDot samplingDot3"></view>
+      <text class="samplingText">正在采集数据...</text>
+    </view>
+
+    <view class="weightNumberWrap">
+      <text class="weightNumber {{hasResult ? 'weightNumberActive' : ''}} {{isSampling ? 'weightNumberJitter' : ''}}">{{weightValue}}</text>
+      <text class="weightUnit">{{weightUnit || 'g'}}</text>
+    </view>
+    <view class="weightSample">{{deviceText}}</view>
+    <view class="weightTime">最近更新：{{lastUpdateTime}}</view>
+
+    <!-- 确认保存按钮 -->
+    <view wx:if="{{canConfirm}}" class="confirmBtn" bindtap="onConfirmRecord">
+      <text class="confirmBtnText">确认并保存记录</text>
+    </view>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="historyCard cardAnimated" wx:if="{{history.length > 0 || selectMode}}">
+    <view class="historyHeader">
+      <view class="historyTitle">历史记录</view>
+      <block wx:if="{{!selectMode}}">
+        <text class="historyCount">共 {{history.length}} 条</text>
+      </block>
+      <block wx:else>
+        <view class="historySelectActions">
+          <text class="historySelectCancel" bindtap="cancelSelect">取消</text>
+          <text class="historySelectAll" bindtap="selectAll">全选</text>
+        </view>
+      </block>
+    </view>
+
+    <view
+      wx:for="{{history}}"
+      wx:key="id"
+      class="historyItem {{selectMode && selectedSet[item.id] ? 'historyItemSelected' : ''}}"
+      bindtap="onTapRecord"
+      bindlongpress="onLongPressRecord"
+      data-id="{{item.id}}"
+    >
+      <view wx:if="{{selectMode}}" class="historyCheckbox {{selectedSet[item.id] ? 'historyCheckboxChecked' : ''}}">
+        <text wx:if="{{selectedSet[item.id]}}" class="checkIcon">✓</text>
+      </view>
+      <view class="historyItemLeft">
+        <view class="historyValue">
+          {{item.value}}<text class="historyUnit"> {{item.unit}}</text>
+        </view>
+        <view class="historyDevice">{{item.device}}</view>
+      </view>
+      <view class="historyItemRight">
+        <view class="historyTime">{{item.time}}</view>
+        <view class="historySampleCount">{{item.sampleCount}} 次采样均值</view>
+      </view>
+    </view>
+
+    <!-- 批量删除栏 -->
+    <view wx:if="{{selectMode}}" class="historyDeleteBar">
+      <view
+        class="historyDeleteBtn {{selectedIds.length === 0 ? 'historyDeleteBtnDisabled' : ''}}"
+        bindtap="deleteSelected"
+      >
+        <text class="historyDeleteText">{{selectedIds.length > 0 ? '删除 ' + selectedIds.length + ' 条' : '请选择记录'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view style="height: 60rpx;"></view>
+</view>

@@ -1,0 +1,9 @@
+{
+  "name": "agent-zhizhongji-7fp1q384666ac7c",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "latest",
+    "openai": "^6.27.0"
+  }
+}

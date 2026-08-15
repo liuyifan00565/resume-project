@@ -1,0 +1,66 @@
+{
+  "setting": {
+    "minifyWXML": true,
+    "es6": true,
+    "postcss": false,
+    "compileWorklet": false,
+    "minified": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "enhance": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "appid": "wx452246aaed55c797",
+  "libVersion": "3.8.12",
+  "compileType": "miniprogram",
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [
+      {
+        "value": "node_modules",
+        "type": "folder"
+      },
+      {
+        "value": "server",
+        "type": "folder"
+      },
+      {
+        "value": "typings",
+        "type": "folder"
+      },
+      {
+        "value": ".venv",
+        "type": "folder"
+      },
+      {
+        "value": ".claude",
+        "type": "folder"
+      },
+      {
+        "value": ".git",
+        "type": "folder"
+      },
+      {
+        "value": "cloudfunctions",
+        "type": "folder"
+      }
+    ],
+    "include": []
+  },
+  "editorSetting": {}
+}

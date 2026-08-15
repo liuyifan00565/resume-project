@@ -1,0 +1,421 @@
+/* pages/describe/index.wxss */
+.page{
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f4f6f8 0%, #f7f8fa 34%, #ffffff 100%);
+  padding: 22rpx 20rpx 0;
+  box-sizing: border-box;
+}
+
+/* 个人信息卡：偏微信系的白卡 + 绿色主操作 */
+.profileCard{
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfc 100%);
+  border-radius: 28rpx;
+  padding: 26rpx 24rpx 24rpx;
+  box-shadow: 0 10rpx 32rpx rgba(15, 41, 77, 0.08);
+  border: 1px solid #eef1f4;
+}
+
+.profileTopRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.profileTopTitle{
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #1f2329;
+}
+
+.profileState{
+  padding: 10rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.profileState.online{
+  background: #e8f7ef;
+  color: #1a7f4b;
+}
+
+.profileState.offline{
+  background: #fff4e8;
+  color: #c7782f;
+}
+
+.profileMainRow{
+  margin-top: 22rpx;
+  display:flex;
+  align-items:flex-start;
+  gap: 20rpx;
+}
+
+.avatarUpload,
+.avatarStaticWrap{
+  width: 132rpx;
+  height: 132rpx;
+  border-radius: 50%;
+  padding: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  border-radius: 50%;
+  background: #f1f3f5;
+  border: 1px solid #e5e8eb;
+}
+
+.avatarUpload::after{
+  border: none;
+}
+
+.avatarImg{
+  width: 100%;
+  height: 100%;
+  display:block;
+}
+
+.avatarPlaceholder{
+  width: 100%;
+  height: 100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: linear-gradient(180deg, #f3f5f7 0%, #eceff2 100%);
+}
+
+.avatarPlus{
+  font-size: 56rpx;
+  color: #95a1ad;
+  line-height: 1;
+}
+
+.avatarMask{
+  position:absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 38rpx;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 18rpx;
+  color: #fff;
+  background: rgba(31,35,41,0.48);
+}
+
+.profileInfoBlock{
+  flex:1;
+  min-width:0;
+}
+
+.fieldLabel{
+  font-size: 22rpx;
+  color: #8a9199;
+}
+
+.nameInput{
+  margin-top: 10rpx;
+  height: 74rpx;
+  border-radius: 18rpx;
+  background: #f7f8fa;
+  border: 1px solid #ebedf0;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #1f2329;
+  box-sizing: border-box;
+}
+
+.userNameLarge{
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #1f2329;
+}
+.userNameLarge.notLogin{
+  color: #b0b8c1;
+  font-weight: 600;
+}
+
+.userDesc{
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: #7b838c;
+  line-height: 1.55;
+}
+
+
+
+.profileActionRow{
+  margin-top: 20rpx;
+}
+
+.wechatLoginBtn,
+.logoutOutlineBtn{
+  width: 100%;
+  border-radius: 20rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.wechatLoginBtn{
+  background: linear-gradient(135deg, #5a9ef5 0%, #3b82f6 50%, #1e62d5 100%);
+  color: #fff;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background: linear-gradient(135deg, #5a9ef5 0%, #3b82f6 50%, #1e62d5 100%); }
+  50% { background: linear-gradient(135deg, #3b82f6 0%, #1e62d5 50%, #5a9ef5 100%); }
+}
+
+.logoutOutlineBtn{
+  background: #ffffff;
+  color: #2f343a;
+  border: 1px solid #e5e8eb;
+}
+
+.wechatLoginBtn::after,
+.logoutOutlineBtn::after{
+  border:none;
+}
+
+.statsRow{
+  margin-top: 18rpx;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14rpx;
+}
+
+.statCard{
+  border-radius: 22rpx;
+  background: #f7f8fa;
+  border: 1px solid #eceff2;
+  padding: 18rpx 18rpx 16rpx;
+}
+
+.statHead{
+  font-size: 22rpx;
+  color: #8b9198;
+}
+
+.statValue{
+  margin-top: 12rpx;
+  font-size: 38rpx;
+  font-weight: 900;
+  color: #1f2329;
+}
+
+.statFoot{
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  color: #9ca3ab;
+  line-height: 1.4;
+}
+
+.panel{
+  margin-top: 18rpx;
+  padding: 8rpx 0 0;
+}
+
+.toolsToggle{
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 16rpx;
+  border-radius: 28rpx;
+  padding: 30rpx 26rpx 28rpx;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(20, 174, 95, 0.84) 0%, rgba(27, 196, 120, 0.78) 55%, rgba(107, 226, 161, 0.7) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow: 0 16rpx 36rpx rgba(24, 157, 95, 0.22);
+  animation: toggleBreath 3.4s ease-in-out infinite;
+  -webkit-backdrop-filter: blur(6rpx);
+  backdrop-filter: blur(6rpx);
+}
+
+.toolsToggleTitle{
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  color: #fffdf8;
+  font-size: 40rpx;
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: 0;
+  font-family: "YouYuan", "幼圆", "Arial Rounded MT Bold", "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif;
+  transform: scaleY(0.88);
+  transform-origin: center;
+  text-shadow: 0 3rpx 0 rgba(93, 157, 116, 0.34), 0 9rpx 16rpx rgba(121, 187, 144, 0.26);
+  -webkit-text-stroke: 1rpx rgba(255, 255, 255, 0.68);
+}
+
+.toolsToggleEnter{
+  position: absolute;
+  right: 22rpx;
+  top: 18rpx;
+  z-index: 3;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  font-size: 21rpx;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 1rpx;
+}
+
+.toolsToggleSub{
+  position: relative;
+  z-index: 2;
+  margin-top: 8rpx;
+  text-align: center;
+  color: rgba(255, 254, 250, 0.95);
+  font-size: 23rpx;
+  letter-spacing: 1rpx;
+}
+
+.toolsToggleBg{
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(228, 255, 239, 0.22);
+}
+
+.toolsToggleBgA{
+  width: 260rpx;
+  height: 260rpx;
+  right: -72rpx;
+  top: -90rpx;
+}
+
+.toolsToggleBgB{
+  width: 180rpx;
+  height: 180rpx;
+  left: -60rpx;
+  bottom: -70rpx;
+  background: rgba(211, 255, 228, 0.18);
+}
+
+.toolsToggleSeed{
+  position: absolute;
+  z-index: 1;
+  font-size: 42rpx;
+  opacity: 0.2;
+  animation: seedFloat 2.8s ease-in-out infinite;
+}
+
+.toolsToggleSeedA{
+  right: 38rpx;
+  bottom: 18rpx;
+}
+
+.toolsToggleSeedB{
+  left: 34rpx;
+  top: 16rpx;
+  animation-delay: 0.8s;
+}
+
+@keyframes toggleBreath {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 16rpx 36rpx rgba(24, 157, 95, 0.22);
+  }
+  50% {
+    transform: translateY(-2rpx);
+    box-shadow: 0 20rpx 42rpx rgba(24, 157, 95, 0.28);
+  }
+}
+
+@keyframes seedFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6rpx) rotate(-6deg);
+  }
+}
+
+/* 2列网格 */
+.grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+/* 工具卡 */
+.toolCard{
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 20rpx 18rpx 18rpx;
+  box-shadow: 0 10rpx 28rpx rgba(15, 41, 77, 0.06);
+  border: 1px solid #edf0f3;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 卡片顶部 */
+.toolTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+/* 图标泡泡 */
+.toolIconWrap{
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(180deg,#f3f5f7 0%, #fbfbfc 100%);
+  border: 1px solid #eceff2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.toolIcon{
+  font-size: 36rpx;
+}
+
+/* 进入按钮（小胶囊） */
+.toolGo{
+  display:flex;
+  align-items:center;
+  gap: 6rpx;
+  padding: 10rpx 14rpx;
+  border-radius: 999rpx;
+  background: #f5f7f9;
+  border: 1px solid #eceff2;
+  color:#3c434a;
+  font-size: 22rpx;
+}
+.goText{ font-weight: 700; }
+.goArrow{ font-size: 28rpx; line-height: 1; }
+
+/* 标题+描述 */
+.toolTitle{
+  margin-top: 12rpx;
+  font-size: 30rpx;
+  font-weight: 900;
+  color: #1f2329;
+}
+.toolDesc{
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #808893;
+  line-height: 1.5;
+  min-height: 68rpx; /* 统一卡片高度更整齐 */
+}
+
+/* 底部装饰线 */
+.toolLine{
+  margin-top: 14rpx;
+  height: 6rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, rgba(34,192,99,0.22) 0%, rgba(34,192,99,0.02) 100%);
+}
+
+/* 底部安全区 */
+.safeBottom{
+  height: 40rpx;
+}

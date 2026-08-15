@@ -1,0 +1,34 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/calculator/index",
+    "pages/history/index",
+    "pages/seed_history/index",
+    "pages/ai/index",
+    "pages/describe/index",
+    "pages/describe_tools/index",
+    "pages/describe_weight/index",
+    "pages/describe_measure/index",
+
+    "pages/describe_tag/index",
+    "pages/describe_report/index",
+    "pages/describe_sampling/index",
+    "pages/describe_correction/index"
+  ],
+  "lazyCodeLoading": "requiredComponents",
+  "window": {
+    "navigationBarTitleText": "种子计数",
+    "navigationBarBackgroundColor": "#5F86FF",
+    "navigationBarTextStyle": "white",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "custom": true,
+    "list": [
+      { "pagePath": "pages/index/index", "text": "种子计数" },
+      { "pagePath": "pages/calculator/index", "text": "计算器" },
+      { "pagePath": "pages/ai/index", "text": "AI助手" },
+      { "pagePath": "pages/describe/index", "text": "我的" }
+    ]
+  }
+}

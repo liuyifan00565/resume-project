@@ -1,0 +1,196 @@
+<view class="page">
+
+<!-- 顶部信息 -->
+<view class="topCard">
+  <view class="title">误检纠偏</view>
+  <view class="sub">对模型计数进行“漏检（加回）/误检（扣除）/重复（扣除）/杂质（扣除）”校正，生成可追溯记录</view>
+</view>
+
+<view wx:if="{{!isLoggedIn}}" class="loginBanner warn">
+  未登录时可计算纠偏结果，但不会保存历史记录。登录后才会按微信账号显示纠偏历史。
+</view>
+
+<view wx:else class="loginBanner ok">
+  当前账号：{{accountName}}。以下纠偏记录仅对该微信账号可见。
+</view>
+
+<!-- 输入区 -->
+<view class="card">
+  <view class="cardTitle">输入纠偏参数</view>
+
+  <view class="row">
+    <text class="label">样本名称</text>
+    <input class="ipt"
+      placeholder="如：地块A-第3次 / 1#2 / 第三次"
+      placeholder-style="color:#a0aec0;"
+      value="{{sampleName}}"
+      bindinput="onSampleNameInput"
+    />
+  </view>
+
+  <view class="row">
+    <text class="label">原始计数</text>
+    <input class="ipt"
+      type="number"
+      placeholder="模型输出的计数"
+      placeholder-style="color:#a0aec0;"
+      value="{{rawCount}}"
+      bindinput="onRawInput"
+    />
+  </view>
+
+  <view class="tip">不填默认为 0：漏检（+），误检/重复/杂质（-）。</view>
+
+  <view class="grid2">
+    <view class="gCell">
+      <text class="gLabel">漏检（+）</text>
+      <input class="gIpt" type="number" placeholder="0" placeholder-style="color:#cbd5e0;"
+        value="{{missed}}" bindinput="onMissedInput" />
+    </view>
+
+    <view class="gCell">
+      <text class="gLabel">误检（-）</text>
+      <input class="gIpt" type="number" placeholder="0" placeholder-style="color:#cbd5e0;"
+        value="{{falsePositive}}" bindinput="onFpInput" />
+    </view>
+
+    <view class="gCell">
+      <text class="gLabel">重复（-）</text>
+      <input class="gIpt" type="number" placeholder="0" placeholder-style="color:#cbd5e0;"
+        value="{{duplicate}}" bindinput="onDupInput" />
+    </view>
+
+    <view class="gCell">
+      <text class="gLabel">杂质/碎粒（-）</text>
+      <input class="gIpt" type="number" placeholder="0" placeholder-style="color:#cbd5e0;"
+        value="{{impurity}}" bindinput="onImpInput" />
+    </view>
+  </view>
+
+  <view class="row">
+    <text class="label">备注</text>
+    <input class="ipt"
+      placeholder="可选：如光照偏暗/重叠较多/边缘模糊"
+      placeholder-style="color:#a0aec0;"
+      value="{{note}}"
+      bindinput="onNoteInput"
+    />
+  </view>
+
+  <button class="btn primary mainBtn" bindtap="calc">计算纠偏结果</button>
+
+  <!-- 预览 -->
+  <view class="preview" wx:if="{{result}}">
+    <view class="previewTitle">纠偏预览</view>
+
+    <view class="kv">
+      <text class="k">纠偏后计数</text>
+      <text class="v">{{result.corrected}}</text>
+    </view>
+
+    <view class="kv">
+      <text class="k">净变化</text>
+      <text class="v">{{result.deltaText}}</text>
+    </view>
+
+    <view class="kv">
+      <text class="k">变化比例</text>
+      <text class="v">{{result.rateText}}</text>
+    </view>
+
+    <view class="judge {{result.levelClass}}">
+      <view class="judgeTitle">提示：{{result.levelText}}</view>
+      <view class="judgeSub">{{result.advice}}</view>
+    </view>
+
+    <view class="previewActions">
+      <button class="btn ghost" size="mini" bindtap="copyPreview">复制文本</button>
+      <button class="btn primary" size="mini" bindtap="saveRecord">保存记录</button>
+    </view>
+  </view>
+</view>
+
+<!-- 记录区 -->
+<view class="card">
+  <view class="cardTitle rowBetween">
+    <text>纠偏记录</text>
+    <text class="muted">{{records.length}} 条</text>
+  </view>
+
+  <view wx:if="{{!records.length}}" class="empty">
+    还没有记录，先计算并保存一条吧～
+  </view>
+
+  <block wx:for="{{records}}" wx:key="id">
+    <view class="item" data-id="{{item.id}}" bindtap="openDetail">
+      <view class="left">
+        <view class="l1">
+          <text class="name">{{item.sampleName}}</text>
+          <text class="time">{{item.timePoint}}</text>
+        </view>
+        <view class="l2">原始: {{item.raw}} → 纠偏: {{item.corrected}}（{{item.rateText}}）</view>
+      </view>
+      <text class="arrow">›</text>
+    </view>
+  </block>
+</view>
+
+<!-- 详情弹窗 -->
+<view class="mask" wx:if="{{showDetail}}" catchtap="closeDetail" catchtouchmove="true"></view>
+<view class="modal" wx:if="{{showDetail}}" catchtouchmove="true">
+  <view class="modalHeader">
+    <view class="modalTitle">纠偏详情</view>
+    <view class="modalSub">{{detail.timePoint}}（自动记录）</view>
+  </view>
+
+  <scroll-view scroll-y class="modalBody" show-scrollbar="false" enhanced="true">
+    <view class="detailBlock">
+      <view class="dRow">
+        <text class="dLabel">样本名称</text>
+        <input class="dIpt" value="{{detail.sampleName}}" bindinput="onDetailName" />
+      </view>
+
+      <view class="dRow">
+        <text class="dLabel">原始计数</text>
+        <input class="dIpt" type="number" value="{{detail.raw}}" bindinput="onDetailRaw" />
+      </view>
+
+      <view class="dGrid">
+        <view class="dCell">
+          <text class="dSmall">漏检（+）</text>
+          <input class="dIpt2" type="number" value="{{detail.missed}}" bindinput="onDetailMissed" />
+        </view>
+        <view class="dCell">
+          <text class="dSmall">误检（-）</text>
+          <input class="dIpt2" type="number" value="{{detail.falsePositive}}" bindinput="onDetailFp" />
+        </view>
+        <view class="dCell">
+          <text class="dSmall">重复（-）</text>
+          <input class="dIpt2" type="number" value="{{detail.duplicate}}" bindinput="onDetailDup" />
+        </view>
+        <view class="dCell">
+          <text class="dSmall">杂质（-）</text>
+          <input class="dIpt2" type="number" value="{{detail.impurity}}" bindinput="onDetailImp" />
+        </view>
+      </view>
+
+      <view class="dRow">
+        <text class="dLabel">备注</text>
+        <input class="dIpt" value="{{detail.note}}" placeholder="可选" bindinput="onDetailNote" />
+      </view>
+    </view>
+
+    <view class="detailBlock">
+      <view class="previewTitle">纠偏文本（点击复制）</view>
+      <view class="detailText" bindtap="copyDetail">{{detail.text}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="modalActions">
+    <button class="btn ghost" size="mini" bindtap="deleteOne">删除</button>
+    <button class="btn primary" size="mini" bindtap="saveDetail">保存修改</button>
+  </view>
+</view>
+
+<view class="bottomSpacer"></view>
+</view>

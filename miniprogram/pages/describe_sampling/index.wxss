@@ -1,0 +1,419 @@
+.page{
+  min-height: 100vh;
+  background: #f6f9ff;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.topCard{
+  background: #ffffff;
+  border-radius: 18rpx;
+  padding: 22rpx 22rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0,0,0,.06);
+  margin-bottom: 20rpx;
+}
+
+.title{
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1f2d3d;
+}
+
+.sub{
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #718096;
+}
+
+.card{
+  background: #ffffff;
+  border-radius: 18rpx;
+  padding: 22rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0,0,0,.06);
+  margin-bottom: 20rpx;
+}
+
+.loginBanner{
+  border-radius: 18rpx;
+  padding: 18rpx 20rpx;
+  margin-bottom: 20rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.loginBanner.warn{
+  background: #fff7e8;
+  border: 1px solid #ffe2ad;
+  color: #a06111;
+}
+
+.loginBanner.ok{
+  background: #eef6ff;
+  border: 1px solid #dce8ff;
+  color: #3152a6;
+}
+
+.cardTitle{
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1f2d3d;
+  margin-bottom: 16rpx;
+}
+
+.rowBetween{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.muted{
+  font-size: 24rpx;
+  color: #a0aec0;
+}
+
+.row{
+  display: flex;
+  align-items: center;
+  margin: 12rpx 0;
+}
+
+.label{
+  width: 180rpx;
+  font-size: 26rpx;
+  color: #4a5568;
+  flex-shrink: 0;
+}
+
+.ipt{
+  flex: 1;
+  height: 68rpx;
+  background: #f7fafc;
+  border-radius: 14rpx;
+  padding: 0 18rpx;
+  box-sizing: border-box;
+  font-size: 26rpx;
+  color: #1f2d3d;
+}
+
+.ipt.small{
+  height: 62rpx;
+}
+
+.tip{
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #718096;
+  line-height: 1.6;
+}
+
+.sampleHeader{
+  display: flex;
+  padding: 8rpx 0;
+  color: #a0aec0;
+  font-size: 24rpx;
+}
+
+.h1{ width: 80rpx; }
+.h2{ flex: 1; }
+.h3{ width: 90rpx; text-align: right; }
+
+.sampleRow{
+  display: flex;
+  align-items: center;
+  padding: 10rpx 0;
+}
+
+.idx{
+  width: 80rpx;
+  font-size: 26rpx;
+  color: #2d3748;
+}
+
+.sampleIpt{
+  height: 62rpx;
+}
+
+.miniBtn{
+  width: 74rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  text-align: center;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  margin-left: 14rpx;
+  box-sizing: border-box;
+}
+
+.miniBtn.danger{
+  background: #ffe5e5;
+  color: #b91c1c;
+}
+
+.actions{
+  margin-top: 14rpx;
+}
+
+.rightBtns{
+  display: flex;
+  gap: 12rpx;
+}
+
+.btn{
+  border-radius: 18rpx;
+  font-weight: 600;
+}
+
+.btn.primary{
+  background: #5F86FF;
+  color: #fff;
+}
+
+.btn.ghost{
+  background: #edf2ff;
+  color: #2b4acb;
+}
+
+.btn.danger{
+  background: #ffe5e5;
+  color: #b91c1c;
+}
+
+/* 只让“计算可信度”按钮更窄（不影响别的 primary 按钮） */
+.calcBtn{
+  width: 80%;
+  margin: 18rpx auto 0;
+}
+
+.grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14rpx;
+}
+
+.gItem{
+  background: #f7fafc;
+  border-radius: 14rpx;
+  padding: 16rpx;
+}
+
+.gLabel{
+  display: block;
+  font-size: 24rpx;
+  color: #718096;
+}
+
+.gVal{
+  display: block;
+  margin-top: 8rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1f2d3d;
+}
+
+.judgeBox{
+  margin-top: 18rpx;
+  border-radius: 16rpx;
+  padding: 18rpx;
+  line-height: 1.6;
+}
+
+.judgeTitle{
+  font-size: 28rpx;
+  font-weight: 800;
+  margin-bottom: 6rpx;
+}
+
+.judgeSub, .judgeSub2{
+  font-size: 24rpx;
+  color: #2d3748;
+}
+
+/* 可信度等级 */
+.levelHigh{
+  background: #e6fffa;
+  color: #065f46;
+}
+.levelMid{
+  background: #fff7ed;
+  color: #9a3412;
+}
+.levelLow{
+  background: #ffe5e5;
+  color: #991b1b;
+}
+
+.bottomSpacer{
+  height: 60rpx;
+}
+/* 复用 mask（如果你已有 mask 可忽略） */
+.mask{
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.35);
+  z-index: 99;
+}
+
+/* 导入弹窗 */
+.importModal{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 86%;
+  max-height: 78vh;
+  background: #fff;
+  border-radius: 18rpx;
+  z-index: 100;
+  overflow: hidden;
+  box-shadow: 0 12rpx 36rpx rgba(0,0,0,.18);
+}
+
+.importHeader{
+  padding: 22rpx;
+  border-bottom: 1rpx solid #edf2f7;
+}
+
+.importTitle{
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #1f2d3d;
+}
+
+.importSub{
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #718096;
+}
+
+.importBody{
+  max-height: 48vh;
+  padding: 10rpx 22rpx 18rpx;
+}
+
+.importItem{
+  padding: 16rpx;
+  border-radius: 14rpx;
+  background: #f7fafc;
+  margin-top: 12rpx;
+}
+
+.importItem.on{
+  background: #edf2ff;
+  border: 1rpx solid rgba(95,134,255,.35);
+}
+
+.importName{
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.importHint{
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #718096;
+}
+
+.importActions{
+  display: flex;
+  gap: 16rpx;
+  padding: 16rpx 22rpx 20rpx;
+  border-top: 1rpx solid #edf2f7;
+}
+
+.importActions .btn{
+  flex: 1;
+  margin: 0;
+  width: auto;
+}
+/* ===== 抽样数据操作按钮区 ===== */
+.actions{
+  margin-top: 12rpx;
+}
+
+/* 左侧“+ 添加一条” */
+.actions > .btn{
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 22rpx;
+  font-size: 26rpx;
+  border-radius: 14rpx;
+}
+
+/* 右侧按钮组 */
+.rightBtns{
+  display: flex;
+  gap: 10rpx;          /* 按钮间距 */
+}
+
+/* 右侧每个小按钮 */
+.rightBtns .btn{
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0 18rpx;
+  font-size: 24rpx;
+  border-radius: 12rpx;
+  margin: 0;           /* 防止被全局 btn margin 影响 */
+  min-width: unset;
+}
+
+/* 清空按钮稍微弱化一点（危险但不抢眼） */
+.rightBtns .btn.danger{
+  background: #ffe5e5;
+  color: #b91c1c;
+}
+
+/* 触感反馈 */
+.actions .btn:active{
+  opacity: 0.85;
+}
+/* ===== 导入字段列表防溢出修复 ===== */
+
+/* 列表容器 */
+.importBody{
+  box-sizing: border-box;
+  overflow-x: hidden;   /* 禁止横向滚动 */
+}
+
+/* 每一条字段项 */
+.importItem{
+  width: 100%;          /* 关键：不要自适应 */
+  box-sizing: border-box;
+  padding: 16rpx;
+  overflow: hidden;     /* 裁剪内部超出 */
+}
+
+/* 字段名称 */
+.importName{
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #2d3748;
+  white-space: nowrap;      /* 不换行 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 超出省略号 */
+}
+
+/* 字段说明 */
+.importHint{
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #718096;
+  line-height: 1.4;
+
+  /* 多行省略，防止撑宽 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.importBody{
+  box-sizing: border-box;
+}
+
+.importModal{
+  overflow: hidden;  /* 防止 scroll-view 贴边显示 */
+}
+.noScroll{
+  height: 100vh;
+  overflow: hidden;
+}

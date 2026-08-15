@@ -1,0 +1,19 @@
+<view class="tabbar_box {{safeArea?'safe':''}}" style="padding-bottom:{{padB}}px;">
+  <view class="tabbar safe">
+    <block wx:for="{{list}}" wx:key="pagePath">
+      <view 
+        class="item {{selected===index?'on':''}}" 
+        bindtap="onChange" 
+        data-index="{{index}}" 
+        data-path="{{item.pagePath}}">
+        
+        <view class="icon-wrap">
+          <!-- 使用 iconfont 字体类名 -->
+          <text class="iconfont icon-{{item.icon}} {{selected===index?'active':''}}"></text>
+        </view>
+        
+        <view class="txt">{{item.text}}</view>
+      </view>
+    </block>
+  </view>
+</view>

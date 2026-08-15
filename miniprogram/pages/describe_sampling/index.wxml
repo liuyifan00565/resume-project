@@ -1,0 +1,158 @@
+<view class="page {{showImport ? 'noScroll' : ''}}">
+
+
+<!-- 顶部信息 -->
+<view class="topCard">
+  <view class="title">抽样可信度</view>
+  <view class="sub">输入多次抽样数据，自动计算均值/方差/CV/RSE，并给出是否建议继续抽样</view>
+</view>
+
+<view wx:if="{{!isLoggedIn}}" class="loginBanner warn">
+  未登录时可以手动输入抽样数据，但不能从标签历史导入。登录后会读取当前微信账号下的标签记录。
+</view>
+
+<view wx:else class="loginBanner ok">
+  当前账号：{{accountName}}。从标签导入时只会读取该账号保存的标签历史。
+</view>
+
+<!-- 配置区 -->
+<view class="card">
+  <view class="cardTitle">参数配置</view>
+
+  <view class="row">
+    <text class="label">指标名称</text>
+    <input class="ipt small" placeholder="如：粒数 / 株数 / 单株粒重" value="{{metricName}}" bindinput="onMetricNameInput"/>
+  </view>
+
+  <view class="row">
+    <text class="label">单位（可选）</text>
+    <input class="ipt small" placeholder="如：粒 / 株 / g" value="{{unit}}" bindinput="onUnitInput"/>
+  </view>
+
+  <view class="row">
+    <text class="label">目标RSE(%)</text>
+    <input class="ipt small" type="number" placeholder="如：10" value="{{targetRSE}}" bindinput="onTargetRSEInput"/>
+  </view>
+
+  <view class="tip">
+    RSE = (标准误 / 均值) × 100%，越小表示抽样均值更稳定。
+  </view>
+</view>
+
+<!-- 数据录入 -->
+<view class="card">
+  <view class="cardTitle rowBetween">
+    <text>抽样数据</text>
+    <text class="muted">{{samples.length}} 条</text>
+  </view>
+
+  <view class="sampleHeader">
+    <text class="h1">序号</text>
+    <text class="h2">数值</text>
+    <text class="h3">操作</text>
+  </view>
+
+  <block wx:for="{{samples}}" wx:key="id">
+    <view class="sampleRow">
+      <text class="idx">{{index + 1}}</text>
+      <input
+        class="ipt sampleIpt"
+        type="number"
+        placeholder="请输入数值"
+        value="{{item.value}}"
+        data-id="{{item.id}}"
+        bindinput="onSampleInput"
+      />
+      <view class="miniBtn danger" data-id="{{item.id}}" bindtap="removeSample">删</view>
+    </view>
+  </block>
+
+  <view class="rowBetween actions">
+  <button class="btn ghost" size="mini" bindtap="addSample">+ 添加一条</button>
+
+  <view class="rightBtns">
+    <button class="btn ghost" size="mini" bindtap="openImport">从标签导入</button>
+    <button class="btn ghost" size="mini" bindtap="fillDemo">填入示例</button>
+    <button class="btn danger" size="mini" bindtap="clearAll">清空</button>
+  </view>
+</view>
+<!-- 导入字段弹窗 -->
+<view class="mask" wx:if="{{showImport}}" catchtap="closeImport" catchtouchmove="true"></view>
+<view class="importModal" wx:if="{{showImport}}" catchtouchmove="true">
+
+  <view class="importHeader">
+    <view class="importTitle">从标签记录导入</view>
+    <view class="importSub">选择一个字段，把历史记录中该字段的数值导入为抽样数据</view>
+  </view>
+
+  <scroll-view
+  scroll-y
+  class="importBody"
+  show-scrollbar="false"
+  enhanced="true"
+>
+
+
+    <block wx:for="{{importFields}}" wx:key="key">
+      <view class="importItem {{importKey===item.key?'on':''}}" data-key="{{item.key}}" bindtap="pickImportKey">
+        <view class="importName">{{item.label}}</view>
+        <view class="importHint">{{item.hint}}</view>
+      </view>
+    </block>
+  </scroll-view>
+
+  <view class="importActions">
+    <button class="btn ghost" size="mini" bindtap="closeImport">取消</button>
+    <button class="btn primary" size="mini" bindtap="doImport">导入</button>
+  </view>
+</view>
+
+
+  <button class="btn primary calcBtn" bindtap="calc">计算可信度</button>
+</view>
+
+<!-- 结果区 -->
+<view class="card" wx:if="{{result}}">
+  <view class="cardTitle">计算结果</view>
+
+  <view class="grid">
+    <view class="gItem">
+      <text class="gLabel">样本数 n</text>
+      <text class="gVal">{{result.n}}</text>
+    </view>
+    <view class="gItem">
+      <text class="gLabel">均值</text>
+      <text class="gVal">{{result.mean}}{{unit ? (' ' + unit) : ''}}</text>
+    </view>
+    <view class="gItem">
+      <text class="gLabel">方差</text>
+      <text class="gVal">{{result.var}}</text>
+    </view>
+    <view class="gItem">
+      <text class="gLabel">标准差</text>
+      <text class="gVal">{{result.std}}</text>
+    </view>
+    <view class="gItem">
+      <text class="gLabel">CV(%)</text>
+      <text class="gVal">{{result.cv}}</text>
+    </view>
+    <view class="gItem">
+      <text class="gLabel">RSE(%)</text>
+      <text class="gVal">{{result.rse}}</text>
+    </view>
+  </view>
+
+  <view class="judgeBox {{result.levelClass}}">
+    <view class="judgeTitle">结论：{{result.levelText}}</view>
+    <view class="judgeSub">{{result.advice}}</view>
+    <view class="judgeSub2" wx:if="{{result.needMore > 0}}">
+      建议总样本数约 {{result.nNeed}}，你还需要再抽样约 {{result.needMore}} 次
+    </view>
+    <view class="judgeSub2" wx:else>
+      当前样本量已满足目标RSE（{{targetRSE}}%）
+    </view>
+  </view>
+</view>
+
+<view class="bottomSpacer"></view>
+</view>

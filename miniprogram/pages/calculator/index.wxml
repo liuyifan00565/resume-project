@@ -1,0 +1,98 @@
+<view class="calc-page">
+  <!-- 右上角历史按钮（跳转历史页） -->
+  <view class="history-btn" bindtap="goHistory">⏱</view>
+
+  <!-- 显示区 -->
+  <view class="display">
+    <text class="result">{{ expr || "0" }}</text>
+  </view>
+
+  <!-- 工具栏：快捷键 + 农用模式（放在键盘上面） -->
+  <view class="toolbar">
+    <view class="tbtn ghost" bindtap="onQuickMul100">×100</view>
+    <view class="tbtn ghost" bindtap="onQuickDiv1000">÷1000</view>
+    <view class="tbtn main" bindtap="toggleAgri">
+      {{showAgri ? "收起农用" : "农用工具"}}
+    </view>
+  </view>
+
+  <!-- 农用工具面板 -->
+  <view class="agri" wx:if="{{showAgri}}">
+    <view class="agri-title">播种量估算</view>
+
+    <view class="agri-form">
+      <view class="field">
+        <text class="label">目标粒数</text>
+        <input class="input" type="number" placeholder="例如 10000"
+          value="{{agri.targetSeeds}}" bindinput="onAgriInput" data-k="targetSeeds" />
+      </view>
+
+      <view class="field">
+        <text class="label">千粒重(g)</text>
+        <input class="input" type="digit" placeholder="例如 28.5"
+          value="{{agri.tkwg}}" bindinput="onAgriInput" data-k="tkwg" />
+      </view>
+
+      <view class="field">
+        <text class="label">发芽率(%)</text>
+        <input class="input" type="digit" placeholder="例如 85"
+          value="{{agri.germPct}}" bindinput="onAgriInput" data-k="germPct" />
+      </view>
+
+      <view class="agri-actions">
+        <view class="abtn ghost" bindtap="onAgriCalc">计算</view>
+        <view class="abtn main" bindtap="onAgriUseResult">结果加入表达式</view>
+      </view>
+
+      <view class="agri-result" wx:if="{{agriResultText}}">
+        <text>{{agriResultText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 键盘区 -->
+  <view class="keyboard">
+    <!-- 第一行 -->
+    <view class="row">
+      <view class="key func back" bindtap="onBackspace">⌫</view>
+
+      <!-- AC：短按清空，长按全部清除 -->
+      <view class="key func ac" catchtap="onClear" catchlongpress="onClearAll">AC</view>
+
+
+      <view class="key func" bindtap="onInsert" data-v="%">%</view>
+      <view class="key op" bindtap="onInsert" data-v="/">÷</view>
+    </view>
+
+    <!-- 第二行 -->
+    <view class="row">
+      <view class="key num" bindtap="onInsert" data-v="7">7</view>
+      <view class="key num" bindtap="onInsert" data-v="8">8</view>
+      <view class="key num" bindtap="onInsert" data-v="9">9</view>
+      <view class="key op" bindtap="onInsert" data-v="*">×</view>
+    </view>
+
+    <!-- 第三行 -->
+    <view class="row">
+      <view class="key num" bindtap="onInsert" data-v="4">4</view>
+      <view class="key num" bindtap="onInsert" data-v="5">5</view>
+      <view class="key num" bindtap="onInsert" data-v="6">6</view>
+      <view class="key op" bindtap="onInsert" data-v="-">−</view>
+    </view>
+
+    <!-- 第四行 -->
+    <view class="row">
+      <view class="key num" bindtap="onInsert" data-v="1">1</view>
+      <view class="key num" bindtap="onInsert" data-v="2">2</view>
+      <view class="key num" bindtap="onInsert" data-v="3">3</view>
+      <view class="key op" bindtap="onInsert" data-v="+">+</view>
+    </view>
+
+    <!-- 第五行 -->
+    <view class="row">
+      <view class="key num zero" bindtap="onInsert" data-v="0">0</view>
+      <view class="key num" bindtap="onInsert" data-v=".">.</view>
+      <view class="key eq" bindtap="onEqual">=</view>
+    </view>
+  </view>
+</view>

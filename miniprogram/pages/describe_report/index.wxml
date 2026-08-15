@@ -1,0 +1,195 @@
+<!-- pages/describe_report/index.wxml -->
+<view class="page">
+
+<view wx:if="{{report}}" class="wrap">
+
+  <view class="accountTip">
+    当前账号：{{accountName}}。报告和样本明细仅基于该微信账号的标签历史生成。
+  </view>
+
+  <!-- 顶部卡片 -->
+  <view class="card headCard">
+    <view class="headRow">
+      <view class="headTitle">
+        <text class="docIcon">📄</text>
+        <text class="titleText">作业报告</text>
+      </view>
+
+      <view class="subText">
+        <text>作业日期：{{report.date || "未记录"}}</text>
+        <text class="dot">·</text>
+        <text>样本数量：{{report.count}} 株</text>
+      </view>
+    </view>
+
+    <!-- 选择日期（仅非“已选记录”时可用） -->
+    <view class="dateRow">
+      <view class="dateLeft">
+        <text class="dateLabel">当前筛选：</text>
+        <text class="dateValue">{{pickedDateStr || "未记录"}}</text>
+      </view>
+      <view class="dateBtn" bindtap="onPickDate">选择日期</view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="btnRow">
+      <button class="btn primary" bindtap="copyReport">复制报告</button>
+      <button class="btn ghost" bindtap="exportTXT">导出TXT</button>
+      <button class="btn ghost" bindtap="exportCSV">导出CSV</button>
+      <button class="btn success" bindtap="exportXLSX">导出Excel</button>
+    </view>
+
+    <view class="hint">
+      <text>提示：点击导出Excel支持预览。</text>
+    </view>
+
+    <view class="hint" wx:if="{{selectedIds.length}}">
+      <text>当前为“已选记录导出”，如需按日期导出请点右下“清空选择”。</text>
+    </view>
+  </view>
+
+  <!-- 统计汇总 -->
+  <view class="card">
+    <view class="cardTitle">
+      <text class="icon">📊</text>
+      <text>统计汇总</text>
+    </view>
+
+    <view class="sumTableBox">
+      <scroll-view class="sumScroll" scroll-x="true" enhanced="true" show-scrollbar="false">
+        <view class="sumTableWide">
+
+          <view class="sumTr sumTh">
+            <view class="sumTd sumLabel">字段</view>
+            <view class="sumTd sumCol">平均</view>
+            <view class="sumTd sumCol">最大</view>
+            <view class="sumTd sumCol">最小</view>
+          </view>
+
+          <block wx:for="{{report.summary}}" wx:key="key">
+            <view class="sumTr">
+              <view class="sumTd sumLabel">{{item.label}}</view>
+
+              <view class="sumTd sumCol">
+                <text class="num">{{item.avg}}</text>
+              </view>
+
+              <!-- 最大 -->
+              <view class="sumTd sumCol">
+                <text
+                  class="num numTap"
+                  data-key="{{item.key}}"
+                  data-type="max"
+                  bindtap="onTapExtremeNumber"
+                >{{item.max}}</text>
+
+                <view wx:if="{{item.expandMax}}" class="seqWrap">
+                  <block wx:for="{{item.maxSeqItems}}" wx:key="seq" wx:for-item="item2">
+                    <text
+                      class="seqChip"
+                      data-ids="{{item2.idsStr}}"
+                      data-seq="{{item2.seq}}"
+                      data-label="{{item.label}}"
+                      bindtap="onTapSeq"
+                    >#{{item2.seq}}</text>
+                  </block>
+                </view>
+              </view>
+
+              <!-- 最小 -->
+              <view class="sumTd sumCol">
+                <text
+                  class="num numTap"
+                  data-key="{{item.key}}"
+                  data-type="min"
+                  bindtap="onTapExtremeNumber"
+                >{{item.min}}</text>
+
+                <view wx:if="{{item.expandMin}}" class="seqWrap">
+                  <block wx:for="{{item.minSeqItems}}" wx:key="seq" wx:for-item="item2">
+                    <text
+                      class="seqChip"
+                      data-ids="{{item2.idsStr}}"
+                      data-seq="{{item2.seq}}"
+                      data-label="{{item.label}}"
+                      bindtap="onTapSeq"
+                    >#{{item2.seq}}</text>
+                  </block>
+                </view>
+              </view>
+            </view>
+          </block>
+
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="sumHint">
+      <text>提示：左右滑动查看，点击最大/最小数字可展开序列编号。</text>
+    </view>
+  </view>
+
+  <!-- 样本明细 -->
+  <view class="card">
+    <view class="cardTitle rowTitle">
+      <view class="leftTitle">
+        <text class="icon">📋</text>
+        <text>样本明细</text>
+      </view>
+
+      <view class="rightActions" wx:if="{{selectionMode}}">
+        <text class="actText" bindtap="exitSelectMode">取消</text>
+        <text class="actDanger" bindtap="deleteSelected">删除({{selectedDetailIds.length}})</text>
+      </view>
+
+      <view class="rightActions" wx:else>
+        <text class="actHint">长按可多选删除，点击查看详情</text>
+      </view>
+    </view>
+
+    <view class="list">
+      <block wx:for="{{pickedTags}}" wx:key="id">
+        <view
+          class="row {{item._checked ? 'rowOn' : ''}}"
+          data-id="{{item.id}}"
+          bindlongpress="onLongPressRow"
+          bindtap="onTapRow"
+        >
+          <view class="ck" wx:if="{{selectionMode}}">
+            <view class="ckBox {{item._checked ? 'on' : ''}}">
+              <text wx:if="{{item._checked}}" class="ckTick">✓</text>
+            </view>
+          </view>
+
+          <view class="idx">{{index + 1}}</view>
+
+          <view class="mid">
+            <view class="t1">{{item.summaryTitle}}</view>
+            <view class="t2">{{item.summarySub}}</view>
+          </view>
+
+          <text class="time">{{item.displayTime}}</text>
+        </view>
+      </block>
+    </view>
+
+    <view class="footActions" wx:if="{{selectedIds.length}}">
+      <button class="btn mini" bindtap="clearPicked">清空选择（回到按日期导出）</button>
+    </view>
+  </view>
+
+</view>
+
+<!-- 空态 -->
+<view wx:else class="empty">
+  <view wx:if="{{!isLoggedIn}}">
+    <view class="emptyTitle">当前未登录，无法查看账号历史报告</view>
+    <view class="emptySub">请先回到作业工具中心完成微信快捷登录，再查看该账号的标签历史。</view>
+  </view>
+  <view wx:else>
+    <view class="emptyTitle">暂无标签记录，无法生成作业报告</view>
+    <view class="emptySub">请先在【生成标签】页生成并保存标签。</view>
+  </view>
+</view>
+
+</view>

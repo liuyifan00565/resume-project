@@ -1,0 +1,173 @@
+<view class="page">
+  <!-- 顶部统计区（压缩高度版） -->
+  <view class="card compact">
+    <view class="row even">
+      <view class="stat">
+        <view class="stat-title">识别数量</view>
+        <view class="stat-val">{{ totalCount }}</view>
+        <view class="stat-unit">粒</view>
+      </view>
+      <view class="stat stat-right">
+        <view class="stat-title">与目标差</view>
+        <view class="stat-diff {{ diffSignClass }}">{{ diffPrefix }}：{{ diffAbs }}</view>
+        <view class="stat-unit">粒</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 选择批次 + 自定义目标（更紧凑） -->
+  <view class="card">
+    <view class="card-title">选择计数批次</view>
+    <view class="seg">
+      <button class="seg-btn {{ target==100?'active':'' }}" bindtap="setTarget100">100 粒</button>
+      <button class="seg-btn {{ target==200?'active':'' }}" bindtap="setTarget200">200 粒</button>
+    </view>
+
+    <view class="target-input">
+      <input class="ipt" type="number" confirm-type="done" placeholder="自定义目标数量" value="{{ target }}" bindinput="onTargetInput" />
+    </view>
+  </view>
+
+  <!-- ✅ 图像预览卡片 - 支持双指缩放 -->
+  <view class="card preview-card">
+    <view class="card-title">
+      图像预览
+      <text class="tip">{{ displayImageUrl ? '双指缩放 / 点击补点' : '请点击下方按钮进行种子识别' }}</text>
+    </view>
+
+    <!-- 🆕 显示手动补点数量提示 -->
+    <view wx:if="{{markers.length > 0}}" class="manual-tip">
+      <text>已手动补点: {{markers.length}} 个</text>
+    </view>
+
+    <!-- 🆕 可缩放的图片容器 -->
+    <view class="img-wrap" wx:if="{{displayImageUrl}}">
+      <movable-area class="movable-area" style="width: 100%; height: {{imgH || 500}}px;">
+        <movable-view 
+          class="movable-view"
+          direction="all"
+          scale="true"
+          scale-min="1"
+          scale-max="3"
+          scale-value="{{imageScale}}"
+          bindscale="onImageScale"
+          x="{{imageX}}"
+          y="{{imageY}}"
+          bindchange="onImageMove"
+          style="width: {{imgW}}px; height: {{imgH}}px;">
+          
+          <!-- 图片本体 -->
+          <image 
+            class="img"
+            src="{{displayImageUrl}}"
+            mode="widthFix"
+            bindload="onImageLoad"
+            binderror="onImageError"
+            show-menu-by-longpress="{{true}}" />
+
+          <!-- 覆盖层：显示标记点并支持点击添加 -->
+          <view class="overlay" bindtap="onImageTap" 
+                catchtouchmove="preventMove"
+                style="width: {{imgW}}px; height: {{imgH}}px;">
+            <!-- 后端识别的标记点（蓝色） -->
+            <block wx:for="{{backendMarkers}}" wx:key="index" wx:for-item="detection">
+              <view class="dot backend-dot" 
+                    style="left: {{detection.x}}px; top: {{detection.y}}px;">
+              </view>
+            </block>
+            
+            <!-- 用户手动添加的标记点（红色） -->
+            <block wx:for="{{markers}}" wx:key="index">
+              <view class="dot manual-dot" 
+                    style="left: {{item.x}}px; top: {{item.y}}px;">
+                <view class="dot-pulse"></view>
+              </view>
+            </block>
+          </view>
+        </movable-view>
+      </movable-area>
+    </view>
+
+    <!-- 空状态提示 -->
+    <view wx:else class="img-empty">
+      <view class="empty-icon"></view>
+      <view class="empty-text">暂无图片</view>
+      <view class="empty-hint">请点击下方按钮开始识别</view>
+    </view>
+  </view>
+
+  <!-- 底部操作 -->
+  <view class="footer">
+    <button class="btn ghost" bindtap="selectFromAlbum" disabled="{{uploading}}">
+      {{ uploading ? '识别中...' : '相册识别' }}
+    </button>
+    <button class="btn primary" bindtap="takePhoto" disabled="{{uploading}}">
+      {{ uploading ? '识别中...' : '拍照识别' }}
+    </button>
+  </view>
+
+  <!-- 🆕 撤销按钮 - 只在有手动点时显示 -->
+  <view wx:if="{{markers.length > 0}}" class="undo-fab" bindtap="undoPoint">
+    <view class="undo-icon">↶</view>
+    <view class="undo-text">撤销</view>
+  </view>
+
+  <!-- 🆕 缩放提示 -->
+  <view wx:if="{{displayImageUrl && imageScale > 1}}" class="zoom-indicator">
+    <text>{{imageScalePercent}}%</text>
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>
+
+<!-- ========== 支持双指缩放的相机浮层 ========== -->
+<view wx:if="{{showCamera}}" class="cam-overlay">
+  <view class="cam-header">
+    <text>双指可缩放取景</text>
+    <button class="cam-btn-cancel" bindtap="closeCameraView">返回</button>
+  </view>
+
+  <!-- 取景框 - 支持缩放 -->
+  <view class="cam-frame">
+    <camera
+      id="camera"
+      device-position="back"
+      flash="auto"
+      mode="normal"
+      bindinitdone="onCameraReady"
+      binderror="onCameraError"
+      style="width:100%;height:100%;"
+    ></camera>
+
+    <!-- 缩放控制滑块 -->
+    <view class="zoom-control">
+      <text class="zoom-label">1×</text>
+      <slider 
+        class="zoom-slider"
+        min="1"
+        max="{{maxZoom}}"
+        value="{{cameraZoom}}"
+        step="0.1"
+        activeColor="#5B7CFF"
+        backgroundColor="rgba(255,255,255,0.3)"
+        block-size="24"
+        bindchange="onZoomChange"
+        bindchanging="onZoomChanging"
+      />
+      <text class="zoom-label">{{maxZoom}}×</text>
+    </view>
+
+    <!-- 四角参考线 -->
+    <view class="corner tl"></view>
+    <view class="corner tr"></view>
+    <view class="corner bl"></view>
+    <view class="corner br"></view>
+  </view>
+
+  <view class="cam-footer">
+    <button class="cam-btn-shutter" bindtap="_snapAndAnalyze">拍照识别</button>
+  </view>
+</view>
+
+<!-- 隐藏裁切用 canvas -->
+<canvas type="2d" id="cutCanvas" style="position:absolute;left:-9999px;top:-9999px;width:300px;height:400px;"></canvas>

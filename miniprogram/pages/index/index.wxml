@@ -1,0 +1,279 @@
+<text class="iconfont icon-seed"></text>
+<wxs module="utils">
+  var formatPercent = function(scale) {
+    return Math.round(scale * 100);
+  };
+  var pctStyle = function(pct) {
+    return 'width:' + (pct || 0) + '%;';
+  };
+  var dotStyle = function(color) {
+    return 'background:' + (color || '#F59E0B') + ';';
+  };
+  var barStyle = function(pct, color) {
+    return 'width:' + (pct || 0) + '%;background:' + (color || '#F59E0B') + ';';
+  };
+  module.exports.formatPercent = formatPercent;
+  module.exports.pctStyle = pctStyle;
+  module.exports.dotStyle = dotStyle;
+  module.exports.barStyle = barStyle;
+</wxs>
+
+<view class="page">
+  <!-- 顶部统计区（压缩高度版） -->
+  <view class="card compact">
+    <view class="row even">
+      <view class="stat">
+        <view class="stat-title">识别数量</view>
+        <view class="stat-val">{{ totalCount }}</view>
+        <view class="stat-unit">粒</view>
+      </view>
+      <view class="stat stat-right">
+        <view class="stat-title">与目标差</view>
+        <view class="stat-diff {{ diffSignClass }}">{{ diffPrefix }}：{{ diffAbs }}</view>
+        <view class="stat-unit">粒</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 选择批次 + 自定义目标（更紧凑） -->
+  <view class="card batch-card">
+    <view class="card-title">选择计数批次</view>
+    <view class="seg {{ target==200 ? 'is-right' : 'is-left' }}">
+      <view class="seg-thumb"></view>
+      <button class="seg-btn {{ target==100?'active':'' }}" bindtap="setTarget100">100 粒</button>
+      <button class="seg-btn {{ target==200?'active':'' }}" bindtap="setTarget200">200 粒</button>
+    </view>
+
+    <view class="target-input">
+      <input class="ipt dynamic-ipt {{inputFocused ? 'focused' : ''}}" type="number" confirm-type="done" placeholder="自定义目标数量" value="{{ target }}" bindinput="onTargetInput" bindfocus="onTargetFocus" bindblur="onTargetBlur" />
+    </view>
+  </view>
+
+  <!-- 图像预览卡片  -->
+  <view class="card preview-card">
+    <view class="card-title">
+      图像预览
+      <text class="tip">{{ displayImageUrl ? '单击补点' : '请点击下方按钮进行种子识别' }}</text>
+      <text class="history-entry" bindtap="openSeedHistory">识别历史</text>
+    </view>
+
+    <!-- 质检缺陷图例（有缺陷标记时显示） -->
+    <view wx:if="{{defectMarkers.length > 0 && qualityResult}}" class="defect-legend">
+      <block wx:for="{{qualityResult.defect_details}}" wx:key="label">
+        <view wx:if="{{item.count > 0}}" class="legend-item">
+          <view class="legend-dot" style="background:{{item.color}};"></view>
+          <text class="legend-text">{{item.label}}{{item.count}}粒</text>
+        </view>
+      </block>
+    </view>
+
+    <!-- 显示手动补点数量提示 -->
+    <view wx:if="{{markers.length > 0}}" class="manual-tip">
+      <text>已手动补点: {{markers.length}} 个</text>
+    </view>
+
+    <!-- 支持手势缩放的图片容器 -->
+    <view class="img-wrap" wx:if="{{displayImageUrl}}">
+      <view
+        class="gesture-container"
+        style="height: {{imgH > 0 ? imgH : 300}}px;"
+        catchtap="onImageTap">
+        
+        <!-- 可变换的图片层 -->
+        <view 
+          class="transform-layer"
+          style="transform: translate({{translateX}}px, {{translateY}}px) scale({{imageScale}}); transform-origin: 0 0;">
+        <!-- <button class="btn" bindtap="goCalc">打开计算器</button>
+  -->
+          <!-- 图片本体 -->
+          <image 
+            class="img"
+            src="{{displayImageUrl}}"
+            mode="widthFix"
+            bindload="onImageLoad"
+            binderror="onImageError"
+            show-menu-by-longpress="{{true}}" />
+
+          <!-- 覆盖层：显示标记点 -->
+          <view class="overlay" style="width: {{imgW}}px; height: {{imgH}}px;">
+            <!-- 后端识别的标记点（蓝色） -->
+            <block wx:for="{{backendMarkers}}" wx:key="index" wx:for-item="detection">
+              <view class="dot backend-dot"
+                    style="left:{{detection.x}}px;top:{{detection.y}}px;background:{{detection.color || '#3b82f6'}};">
+              </view>
+            </block>
+
+            <!-- 用户手动添加的标记点（红色） -->
+            <block wx:for="{{markers}}" wx:key="index">
+              <view class="dot manual-dot"
+                    style="left: {{item.x}}px; top: {{item.y}}px;">
+                <view class="dot-pulse"></view>
+              </view>
+            </block>
+
+            <!-- 质检缺陷标记点（各分类颜色） -->
+            <block wx:for="{{defectMarkers}}" wx:key="index" wx:for-item="dm">
+              <view class="dot defect-dot"
+                    style="left:{{dm.x}}px; top:{{dm.y}}px; background:{{dm.color}};">
+              </view>
+            </block>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="img-empty">
+      <view class="empty-icon"></view>
+      <view class="empty-text">暂无图片</view>
+      <view class="empty-hint">请点击下方按钮开始识别</view>
+    </view>
+  </view>
+
+  <!-- 底部操作 -->
+  <view class="footer">
+    <button class="btn ghost" bindtap="selectFromAlbum" disabled="{{uploading || qualityLoading}}">
+      {{ uploading ? '识别中...' : '相册识别' }}
+    </button>
+    <button class="btn primary" bindtap="takePhoto" disabled="{{uploading || qualityLoading}}">
+      {{ uploading ? '识别中...' : '拍照识别' }}
+    </button>
+  </view>
+
+  <!-- 质量检测按钮：识别完成后显示 -->
+  <view wx:if="{{hasImage}}" class="quality-row">
+    <button
+      class="btn-quality {{qualityLoading ? 'btn-quality--loading' : ''}}"
+      bindtap="startQualityDetect"
+      disabled="{{qualityLoading || uploading}}">
+      <text class="btn-quality-icon">{{qualityLoading ? '⏳' : '🔬'}}</text>
+      <text class="btn-quality-label">{{ qualityLoading ? '质量检测中…' : '质量检测' }}</text>
+    </button>
+  </view>
+
+  <!-- 🆕 撤销按钮 - 只在有手动点时显示 -->
+  <view wx:if="{{markers.length > 0}}" class="undo-fab" bindtap="undoPoint">
+    <view class="undo-icon">↶</view>
+    <view class="undo-text">撤销</view>
+  </view>
+
+  <!-- 🆕 缩放提示 -->
+  <view wx:if="{{displayImageUrl && imageScale > 1}}" class="zoom-indicator">
+    <text>{{utils.formatPercent(imageScale)}}%</text>
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>
+
+<!-- ========== 质量检测结果面板 ========== -->
+<view wx:if="{{showQualityPanel && qualityResult}}" class="qp-mask" bindtap="closeQualityPanel">
+  <view class="qp-sheet" catchtap="noop">
+
+    <!-- 固定头部：标题 + 汇总 + 正常粒（不随内容滚动） -->
+    <view class="qp-fixed-top">
+      <view class="qp-header">
+        <text class="qp-title">质量检测报告</text>
+        <view class="qp-close" bindtap="closeQualityPanel">✕</view>
+      </view>
+
+      <view class="qp-summary">
+        <view class="qp-s-item">
+          <view class="qp-s-val">{{qualityResult.total_count || totalCount}}</view>
+          <view class="qp-s-label">总粒数</view>
+        </view>
+        <view class="qp-s-item qp-s-item--mid">
+          <view class="qp-s-val qp-s-val--pct">{{qualityResult.pass_rate_pct || '--'}}%</view>
+          <view class="qp-s-label">合格率</view>
+        </view>
+        <view class="qp-s-item">
+          <view class="qp-s-val qp-s-val--grade {{qualityResult.grade_class || ''}}">{{qualityResult.quality_grade || '--'}}</view>
+          <view class="qp-s-label">质量等级</view>
+        </view>
+      </view>
+
+      <view class="qp-normal-row">
+        <view class="qp-dot qp-dot--ok"></view>
+        <text class="qp-normal-label">正常粒</text>
+        <text class="qp-normal-count">{{qualityResult.normal_count || '--'}} 粒</text>
+        <view class="qp-bar-wrap">
+          <view class="qp-bar qp-bar--ok" style="{{utils.pctStyle(qualityResult.pass_rate_pct)}}"></view>
+        </view>
+        <text class="qp-pct">{{qualityResult.pass_rate_pct || '--'}}%</text>
+      </view>
+    </view>
+
+    <!-- 缺陷粒 + 其他，与正常粒同层级展示 -->
+    <view class="qp-category-list">
+      <view
+        class="qp-normal-row"
+        wx:for="{{qualityResult.defect_details}}"
+        wx:key="label">
+        <view class="qp-dot" style="{{utils.dotStyle(item.color)}}"></view>
+        <text class="qp-normal-label">{{item.label}}</text>
+        <text class="qp-normal-count">{{item.count}} 粒</text>
+        <view class="qp-bar-wrap">
+          <view class="qp-bar" style="{{utils.barStyle(item.ratio_pct, item.color)}}"></view>
+        </view>
+        <text class="qp-pct">{{item.ratio_pct || 0}}%</text>
+      </view>
+    </view>
+
+    <!-- 固定底部：关闭按钮始终可见 -->
+    <view class="qp-fixed-bottom">
+      <button class="qp-btn-close" bindtap="closeQualityPanel">关闭</button>
+    </view>
+
+  </view>
+</view>
+
+<!-- ========== 支持双指缩放的相机浮层 ========== -->
+<view wx:if="{{showCamera}}" class="cam-overlay">
+  <view class="cam-header">
+    <text>可缩放取景</text>
+    <view class="cam-header-spacer"></view>
+    <button class="cam-btn-cancel" bindtap="closeCameraView">返回</button>
+  </view>
+
+  <!-- 取景框 - 支持缩放 -->
+  <view class="cam-frame">
+    <camera
+      id="camera"
+      device-position="back"
+      flash="auto"
+      mode="normal"
+      bindinitdone="onCameraReady"
+      binderror="onCameraError"
+      style="width:100%;height:100%;"
+    ></camera>
+
+    <!-- 缩放控制滑块 -->
+    <view class="zoom-control">
+      <text class="zoom-label">0.5×</text>
+      <slider 
+        class="zoom-slider"
+        min="0.5"
+        max="{{maxZoom}}"
+        value="{{cameraZoom}}"
+        step="0.1"
+        activeColor="#5B7CFF"
+        backgroundColor="rgba(255,255,255,0.3)"
+        block-size="24"
+        bindchange="onZoomChange"
+        bindchanging="onZoomChanging"
+      />
+      <text class="zoom-label">{{maxZoom}}×</text>
+    </view>
+
+    <!-- 四角参考线 -->
+    <view class="corner tl"></view>
+    <view class="corner tr"></view>
+    <view class="corner bl"></view>
+    <view class="corner br"></view>
+  </view>
+
+  <view class="cam-footer">
+    <button class="cam-btn-shutter" bindtap="_snapAndAnalyze">拍照识别</button>
+  </view>
+</view>
+
+<!-- 隐藏裁切用 canvas -->
+<canvas type="2d" id="cutCanvas" style="position:absolute;left:-9999px;top:-9999px;width:300px;height:400px;"></canvas>

@@ -1,0 +1,140 @@
+<view class="page">
+  <view wx:if="{{!isLoggedIn}}" class="emptyCard">
+    <view class="emptyTitle">请先登录</view>
+    <view class="emptyDesc">前往“我的”完成微信登录后，可查看该账号下全部识别历史。</view>
+  </view>
+
+  <view wx:else>
+    <view class="topbar">
+      <view class="summary">当前账号：{{accountName}}</view>
+      <view class="actions">
+        <button class="btn ghost" size="mini" bindtap="goToDescribe">去登录页</button>
+        <button class="btn danger" size="mini" bindtap="onClearAll">清空</button>
+      </view>
+    </view>
+
+    <view wx:if="{{!items.length}}" class="emptyCard">
+      <view class="emptyTitle">暂无识别历史</view>
+      <view class="emptyDesc">完成一次种子识别后会自动记录到这里。</view>
+    </view>
+
+    <block wx:for="{{items}}" wx:key="id">
+      <view class="card {{selectMode && selectedMap[item.id] ? 'card-selected' : ''}}"
+        bindtap="onItemTap"
+        bindlongpress="onItemLongPress"
+        data-id="{{item.id}}">
+        <view class="row1">
+          <text class="count">{{item.totalCount}} 粒</text>
+          <view class="row1-right">
+            <text wx:if="{{item.qualityGrade}}" class="grade-badge {{item.gradeClass}}">{{item.qualityGrade}}</text>
+            <text class="time">{{item.displayTime}}</text>
+            <!-- 选择模式复选框 -->
+            <view wx:if="{{selectMode}}" class="ck-wrap" catchtap="onToggleSelect" data-id="{{item.id}}">
+              <view class="ck {{selectedMap[item.id] ? 'ck-on' : ''}}">
+                <text wx:if="{{selectedMap[item.id]}}" class="ck-tick">✓</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class="row2">
+          <text>目标：{{item.target}} 粒</text>
+          <text>差值：{{item.diff}}</text>
+        </view>
+        <view wx:if="{{item.qualityGrade}}" class="row3">
+          <text class="q-label">合格率</text>
+          <view class="q-bar-wrap">
+            <view class="q-bar" style="width:{{item.passRatePct}}%;"></view>
+          </view>
+          <text class="q-pct">{{item.passRatePct}}%</text>
+          <text class="q-defect">{{item.defectSummary}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>
+
+<!-- 批量操作底栏 -->
+<view wx:if="{{selectMode}}" class="batch-bar">
+  <text class="batch-info">已选 {{selectedCount}} 条</text>
+  <view class="batch-btns">
+    <button class="btn ghost" size="mini" bindtap="exitSelectMode">取消</button>
+    <button class="btn danger" size="mini" bindtap="batchDelete">删除</button>
+  </view>
+</view>
+
+<!-- 详情弹窗 -->
+<view wx:if="{{showDetail && detailItem}}" class="detail-mask" catchtap="closeDetail"></view>
+<view wx:if="{{showDetail && detailItem}}" class="detail-sheet" catchtap="noop">
+  <view class="detail-header">
+    <text class="detail-title">识别详情</text>
+    <view class="detail-close" bindtap="closeDetail">✕</view>
+  </view>
+
+  <scroll-view scroll-y class="detail-body" style="height:100%;">
+  <view class="detail-body-inner">
+    <!-- 主数据行 -->
+    <view class="d-summary">
+      <view class="d-s-item">
+        <view class="d-s-val">{{detailItem.totalCount}}</view>
+        <view class="d-s-label">总粒数</view>
+      </view>
+      <view class="d-s-item">
+        <view class="d-s-val">{{detailItem.target}}</view>
+        <view class="d-s-label">目标</view>
+      </view>
+      <view class="d-s-item">
+        <view class="d-s-val {{detailItem.diff < 0 ? 'd-val-plus' : 'd-val-minus'}}">{{detailItem.diff > 0 ? '+' : ''}}{{detailItem.diff}}</view>
+        <view class="d-s-label">差值</view>
+      </view>
+    </view>
+
+    <!-- 手动补点 -->
+    <view class="d-row">
+      <text class="d-row-label">手动补点</text>
+      <text class="d-row-val {{detailItem.manualPoints > 0 ? 'manual-pts' : ''}}">
+        {{detailItem.manualPoints > 0 ? '+' : ''}}{{detailItem.manualPoints || 0}} 粒
+      </text>
+    </view>
+
+    <view class="d-row">
+      <text class="d-row-label">识别时间</text>
+      <text class="d-row-val">{{detailItem.displayTime}}</text>
+    </view>
+
+    <!-- 质检结果（有时才显示） -->
+    <view wx:if="{{detailItem.qualityGrade}}" class="d-quality-block">
+      <view class="d-quality-title">质量检测结果</view>
+      <view class="d-row">
+        <text class="d-row-label">质量等级</text>
+        <text class="d-row-val grade-badge {{detailItem.gradeClass}}">{{detailItem.qualityGrade}}</text>
+      </view>
+      <view class="d-row">
+        <text class="d-row-label">合格率</text>
+        <view class="d-bar-wrap">
+          <view class="d-bar" style="width:{{detailItem.passRatePct}}%;"></view>
+        </view>
+        <text class="d-row-val">{{detailItem.passRatePct}}%</text>
+      </view>
+      <view class="d-row" wx:if="{{detailItem.normalCount}}">
+        <text class="d-row-label">正常粒</text>
+        <text class="d-row-val">{{detailItem.normalCount}} 粒</text>
+      </view>
+      <view class="d-row" wx:if="{{detailItem.defectSummary && detailItem.defectSummary !== '无缺陷'}}">
+        <text class="d-row-label">缺陷明细</text>
+        <text class="d-row-val defect-txt">{{detailItem.defectSummary}}</text>
+      </view>
+      <view class="d-row" wx:elif="{{detailItem.qualityGrade}}">
+        <text class="d-row-label">缺陷明细</text>
+        <text class="d-row-val">无缺陷</text>
+      </view>
+    </view>
+
+    <view wx:else class="d-no-quality">未做质量检测</view>
+  </view>
+  </scroll-view>
+
+  <view class="detail-footer">
+    <button class="d-btn-del" bindtap="onDeleteDetail">删除记录</button>
+    <button class="d-btn-close" bindtap="closeDetail">关闭</button>
+  </view>
+</view>
